@@ -1,0 +1,56 @@
+name: gaonnuri CI/CD
+
+on:
+  push:
+    branches:
+      - dev # 브랜치 이름
+  workflow_dispatch: # 수동 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # OS 환경
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2 # 코드 check out (해당 workflow가 레포지토리에 접근할 수 있게 함)
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version: 16.16.0 # 노드 설치 (16.16.0)
+
+      - name: Install Dependencies
+        run: npm install # dependency 설치
+
+      - name: Build a Nest Application
+        run: npm run build
+        shell: bash # nestJS application 빌드
+
+      - name: Make a zip file
+        run: zip -r deploy.zip . -x "node_modules/*" "coverage/*" "src/*" "test/*" "README.md" "*.git*"
+        shell: bash
+
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: '+09:00'
+
+      - name: Show Current Time
+        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}" # (2)
+        shell: bash
+
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: gaonnuri
+          environment_name: Gaonnuri-env
+          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
+          region: ap-northeast-2
+          deployment_package: deploy.zip
+          wait_for_environment_recovery: 180
+
+      - name: Deployed!
+        run: echo App deployed to ELB
