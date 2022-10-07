@@ -1,4 +1,4 @@
-name: gaonnuri CI/CD
+name: goTogether CI/CD
 
 on:
   push:
