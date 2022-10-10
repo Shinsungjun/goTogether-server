@@ -78,6 +78,14 @@ export class AuthController {
     description: '전화번호의 형식을 확인해주세요.',
   })
   @ApiResponse({
+    status: 2012,
+    description: '인증번호는 6자리로 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2013,
+    description: '인증번호가 일치하지 않습니다.',
+  })
+  @ApiResponse({
     status: 4000,
     description: '서버 에러',
   })
@@ -118,14 +126,6 @@ export class AuthController {
   @ApiResponse({
     status: 2010,
     description: '존재하는 아이디입니다.',
-  })
-  @ApiResponse({
-    status: 2012,
-    description: '인증번호는 6자리로 입력해주세요.',
-  })
-  @ApiResponse({
-    status: 2013,
-    description: '인증번호가 일치하지 않습니다.',
   })
   @ApiResponse({
     status: 4000,
