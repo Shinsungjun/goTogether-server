@@ -1,12 +1,15 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
+  ApiHeader,
   ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { makeResponse } from 'common/function.utils';
 import { BaseResponse } from 'config/base.response';
+import { response } from 'config/response.utils';
 import {
   GetDuplicateId,
   SendSMS,
@@ -14,11 +17,13 @@ import {
   VerifySMS,
 } from '../decorators/auth.decorator';
 import { AuthService } from './auth.service';
+import { CheckJwtRepsonse } from './dto/check-jwt.response';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
 import { SendSMSRequest } from './dto/send-SMS.request';
 import { SignInRequest } from './dto/sign-in.request';
 import { SignInResponse } from './dto/sign-in.response';
 import { VerifySMSRequest } from './dto/verify-SMS.request';
+import { JwtAuthGuard } from './jwt/jwt.guard';
 
 @ApiTags('Auth API')
 @Controller('/web/auth')
@@ -188,5 +193,42 @@ export class AuthController {
   @Post('sign-in')
   async signIn(@SignIn() signInRequest: SignInRequest) {
     return await this.authService.signIn(signInRequest);
+  }
+
+  /*
+    description: 자동 로그인 api
+    requires: x
+    returns: 
+  */
+  @ApiOperation({ summary: '자동 로그인 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: CheckJwtRepsonse,
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @Get('/jwt')
+  @UseGuards(JwtAuthGuard)
+  async checkJwt(@Req() req: any) {
+    try {
+      const userIdFromJwt = req.user.userId;
+
+      const data = {
+        userId: userIdFromJwt,
+      };
+
+      return makeResponse(response.SUCCESS, data);
+    } catch (error) {
+      return response.ERROR;
+    }
   }
 }
