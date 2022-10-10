@@ -5,7 +5,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 13 })
+  @Column({ length: 15 })
   phoneNumber: string;
 
   // 아이디
