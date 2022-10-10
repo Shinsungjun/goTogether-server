@@ -8,10 +8,11 @@ import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { Cache } from 'cache-manager';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
-import { SendSMSRequest } from './dto/post-auth-phone.request';
+import { SendSMSRequest } from './dto/send-SMS.request';
 import * as crypto from 'crypto';
 import { messageOption } from 'config/message';
 import axios from 'axios';
+import { VerifySMSRequest } from './dto/verify-SMS.request';
 
 @Injectable()
 export class AuthService {
@@ -106,6 +107,28 @@ export class AuthService {
         });
 
       return sendMessageResponse;
+    } catch (error) {
+      return response.ERROR;
+    }
+  }
+
+  async verifySMS(verifySMSRequest: VerifySMSRequest) {
+    try {
+      // 캐시 데이터
+      const originVerifyCode = await this.cacheManager.get(
+        verifySMSRequest.phoneNumber,
+      );
+
+      if (originVerifyCode != verifySMSRequest.verifyCode) {
+        return response.VERIFY_CODE_NOT_MATCH;
+      }
+
+      // 인증 완료 -> 키값 제거
+      await this.cacheManager.del(verifySMSRequest.phoneNumber);
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
     } catch (error) {
       return response.ERROR;
     }

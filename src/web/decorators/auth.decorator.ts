@@ -37,3 +37,24 @@ export const SendSMS = createParamDecorator(
     return sendSMSData;
   },
 );
+
+export const VerifySMS = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const verifySMSData = ctx.switchToHttp().getRequest().query;
+
+    if (!verifySMSData.phoneNumber) {
+      throw new HttpException(response.USER_PHONENUMBER_EMPTY, 200);
+    }
+    if (!regularExp.phoneNumberRegex.test(verifySMSData.phoneNumber)) {
+      throw new HttpException(response.INVALID_USER_PHONENUMBER, 200);
+    }
+    if (!verifySMSData.verifyCode) {
+      throw new HttpException(response.VERIFY_CODE_EMPTY, 200);
+    }
+    if (verifySMSData.verifyCode.length != 6) {
+      throw new HttpException(response.INVALID_VERIFY_CODE, 200);
+    }
+
+    return verifySMSData;
+  },
+);

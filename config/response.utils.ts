@@ -54,6 +54,21 @@ export const response = {
     code: 2010,
     message: '존재하는 아이디입니다.',
   },
+  VERIFY_CODE_EMPTY: {
+    isSuccess: false,
+    code: 2011,
+    message: '인증번호를 입력해주세요.',
+  },
+  INVALID_VERIFY_CODE: {
+    isSuccess: false,
+    code: 2012,
+    message: '인증번호는 6자리로 입력해주세요.',
+  },
+  VERIFY_CODE_NOT_MATCH: {
+    isSuccess: false,
+    code: 2013,
+    message: '인증번호가 일치하지 않습니다.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,
