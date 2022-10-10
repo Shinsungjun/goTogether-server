@@ -58,3 +58,24 @@ export const VerifySMS = createParamDecorator(
     return verifySMSData;
   },
 );
+
+export const SignIn = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const signInData = ctx.switchToHttp().getRequest().body;
+
+    if (!signInData.userName) {
+      throw new HttpException(response.USER_USERNAME_EMPTY, 201);
+    }
+    if (signInData.userName.length <= 0 || signInData.userName > 15) {
+      throw new HttpException(response.INVALID_USER_USERNAME, 201);
+    }
+    if (!signInData.password) {
+      throw new HttpException(response.USER_PASSWORD_EMPTY, 201);
+    }
+    if (!regularExp.passwordRegex.test(signInData.password)) {
+      throw new HttpException(response.INVALID_USER_PASSWORD, 201);
+    }
+
+    return signInData;
+  },
+);

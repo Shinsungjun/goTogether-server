@@ -13,6 +13,10 @@ import * as crypto from 'crypto';
 import { messageOption } from 'config/message';
 import axios from 'axios';
 import { VerifySMSRequest } from './dto/verify-SMS.request';
+import { SignInRequest } from './dto/sign-in.request';
+import * as bcrypt from 'bcrypt';
+import { Payload } from './jwt/jwt.payload';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +24,7 @@ export class AuthService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private jwtSerivce: JwtService,
   ) {}
 
   private makeSignature() {
@@ -148,6 +153,43 @@ export class AuthService {
       }
 
       const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    }
+  }
+
+  async signIn(signInRequest: SignInRequest) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: {
+          userName: signInRequest.userName,
+          status: Status.ACTIVE,
+        },
+      });
+      if (!user) {
+        return response.SIGN_IN_ERROR;
+      }
+      const passwordCheck = await bcrypt.compare(
+        signInRequest.password,
+        user.password,
+      );
+      if (!passwordCheck) {
+        return response.SIGN_IN_ERROR;
+      }
+
+      const payload: Payload = {
+        userId: user.id,
+      };
+      const token = this.jwtSerivce.sign(payload);
+
+      const data = {
+        userId: user.id,
+        jwt: token,
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
 
       return result;
     } catch (error) {

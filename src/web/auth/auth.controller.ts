@@ -10,11 +10,14 @@ import { BaseResponse } from 'config/base.response';
 import {
   GetDuplicateId,
   SendSMS,
+  SignIn,
   VerifySMS,
 } from '../decorators/auth.decorator';
 import { AuthService } from './auth.service';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
 import { SendSMSRequest } from './dto/send-SMS.request';
+import { SignInRequest } from './dto/sign-in.request';
+import { SignInResponse } from './dto/sign-in.response';
 import { VerifySMSRequest } from './dto/verify-SMS.request';
 
 @ApiTags('Auth API')
@@ -141,5 +144,49 @@ export class AuthController {
     @GetDuplicateId() getDuplicateIdRequest: GetDuplicateIdRequest,
   ) {
     return await this.authService.retrieveDuplicateId(getDuplicateIdRequest);
+  }
+
+  /*
+    description: 로그인 api
+    requires: signInRequest
+    returns: signInResponse
+  */
+  @ApiOperation({ summary: '로그인 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: SignInResponse,
+  })
+  @ApiResponse({
+    status: 2003,
+    description: '아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2004,
+    description: '아이디의 길이를 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2005,
+    description: '비밀번호를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2006,
+    description: '비밀번호의 형식을 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2015,
+    description: '아이디 혹은 비밀번호가 틀렸습니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiBody({
+    description: '로그인 DTO',
+    type: SignInRequest,
+  })
+  @Post('sign-in')
+  async signIn(@SignIn() signInRequest: SignInRequest) {
+    return await this.authService.signIn(signInRequest);
   }
 }

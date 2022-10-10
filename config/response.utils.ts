@@ -4,6 +4,11 @@ export const response = {
     code: 1000,
     message: '성공',
   },
+  CHECK_JWT_TOKEN: {
+    isSuccess: false,
+    code: 2000,
+    message: 'jwt 검증 실패.',
+  },
   USER_PHONENUMBER_EMPTY: {
     isSuccess: false,
     code: 2001,
@@ -68,6 +73,16 @@ export const response = {
     isSuccess: false,
     code: 2013,
     message: '인증번호가 일치하지 않습니다.',
+  },
+  NON_EXIST_USER: {
+    isSuccess: false,
+    code: 2014,
+    message: '존재하지 않는 유저입니다.',
+  },
+  SIGN_IN_ERROR: {
+    isSuccess: false,
+    code: 2015,
+    message: '아이디 혹은 비밀번호가 틀렸습니다.',
   },
   ERROR: {
     isSuccess: false,

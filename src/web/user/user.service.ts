@@ -8,6 +8,7 @@ import { PostUserRequest } from './dto/post-user.request';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { makeResponse } from 'common/function.utils';
+import { Payload } from '../auth/jwt/jwt.payload';
 
 @Injectable()
 export class UserService {
@@ -57,7 +58,7 @@ export class UserService {
       const createUserData = await this.userRepository.save(userRegister);
 
       // create payload
-      const payload = {
+      const payload: Payload = {
         userId: createUserData.id,
       };
 
