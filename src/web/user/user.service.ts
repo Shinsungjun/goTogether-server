@@ -4,7 +4,7 @@ import { Status } from 'common/variable.utils';
 import { response } from 'config/response.utils';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
-import { PostUserRequest } from './dto/postUser/post-user.request';
+import { PostUserRequest } from './dto/post-user.request';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { makeResponse } from 'common/function.utils';

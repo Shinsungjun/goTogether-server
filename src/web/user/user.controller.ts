@@ -1,8 +1,8 @@
 import { Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PostUser } from '../decorators/user.decorator';
-import { PostUserRequest } from './dto/postUser/post-user.request';
-import { PostUserResponse } from './dto/postUser/post-user.response';
+import { PostUserRequest } from './dto/post-user.request';
+import { PostUserResponse } from './dto/post-user.response';
 import { UserService } from './user.service';
 
 @ApiTags('User API')
@@ -27,7 +27,7 @@ export class UserController {
   })
   @ApiResponse({
     status: 2002,
-    description: '전화번호의 길이를 확인해주세요.',
+    description: '전화번호의 형식을 확인해주세요.',
   })
   @ApiResponse({
     status: 2003,

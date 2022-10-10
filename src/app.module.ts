@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './web/auth/auth.module';
 import { UserModule } from './web/user/user.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { UserModule } from './web/user/user.module';
       bigNumberStrings: false,
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
