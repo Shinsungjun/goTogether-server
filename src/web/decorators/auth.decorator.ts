@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   HttpException,
 } from '@nestjs/common';
+import { regularExp } from 'config/regular.exp';
 import { response } from 'config/response.utils';
 
 export const GetDuplicateId = createParamDecorator(
@@ -19,5 +20,20 @@ export const GetDuplicateId = createParamDecorator(
     }
 
     return getDuplicateIdData;
+  },
+);
+
+export const SendSMS = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const sendSMSData = ctx.switchToHttp().getRequest().body;
+
+    if (!sendSMSData.phoneNumber) {
+      throw new HttpException(response.USER_PHONENUMBER_EMPTY, 201);
+    }
+    if (!regularExp.phoneNumberRegex.test(sendSMSData.phoneNumber)) {
+      throw new HttpException(response.INVALID_USER_PHONENUMBER, 201);
+    }
+
+    return sendSMSData;
   },
 );

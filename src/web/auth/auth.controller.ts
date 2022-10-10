@@ -1,14 +1,57 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post } from '@nestjs/common';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { BaseResponse } from 'config/base.response';
-import { GetDuplicateId } from '../decorators/auth.decorator';
+import { GetDuplicateId, SendSMS } from '../decorators/auth.decorator';
 import { AuthService } from './auth.service';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
+import { SendSMSRequest } from './dto/post-auth-phone.request';
 
 @ApiTags('Auth API')
 @Controller('/web/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  /*
+    description: 휴대폰 인증 api
+    requires: sendSMSRequest
+    returns: BaseResponse
+  */
+  @ApiOperation({ summary: '휴대폰 인증 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2001,
+    description: '전화번호를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2002,
+    description: '전화번호의 형식을 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2009,
+    description: '존재하는 전화번호입니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiBody({
+    description: '휴대폰 인증 DTO',
+    type: SendSMSRequest,
+  })
+  @Post('/phone')
+  async sendSMS(@SendSMS() sendSMSRequest: SendSMSRequest) {
+    return await this.authService.sendSMS(sendSMSRequest);
+  }
 
   /*
     description: 아이디 중복 확인 api
