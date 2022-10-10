@@ -31,6 +31,35 @@ export class UserController {
   })
   @ApiResponse({
     status: 2003,
+    description: '아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2004,
+    description: '아이디의 길이를 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2005,
+    description: '비밀번호를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2006,
+    description: '비밀번호의 형식을 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2007,
+    description: '닉네임을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2008,
+    description: '닉네임의 형식을 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2009,
+    description: '존재하는 전화번호입니다.',
+  })
+  @ApiResponse({
+    status: 2010,
+    description: '존재하는 아이디입니다.',
   })
   @ApiResponse({
     status: 4000,
