@@ -94,3 +94,28 @@ export const GetId = createParamDecorator(
     return getIdData;
   },
 );
+
+export const CompareIdPhoneNumber = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const compareIdPhoneNumberData = ctx.switchToHttp().getRequest().query;
+    if (!compareIdPhoneNumberData.phoneNumber) {
+      throw new HttpException(response.USER_PHONENUMBER_EMPTY, 201);
+    }
+    if (
+      !regularExp.phoneNumberRegex.test(compareIdPhoneNumberData.phoneNumber)
+    ) {
+      throw new HttpException(response.INVALID_USER_PHONENUMBER, 201);
+    }
+    if (!compareIdPhoneNumberData.userName) {
+      throw new HttpException(response.USER_USERNAME_EMPTY, 201);
+    }
+    if (
+      compareIdPhoneNumberData.userName.length <= 0 ||
+      compareIdPhoneNumberData.userName > 15
+    ) {
+      throw new HttpException(response.INVALID_USER_USERNAME, 201);
+    }
+
+    return compareIdPhoneNumberData;
+  },
+);

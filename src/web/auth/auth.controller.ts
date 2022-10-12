@@ -11,6 +11,7 @@ import { makeResponse } from 'common/function.utils';
 import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import {
+  CompareIdPhoneNumber,
   GetDuplicateId,
   GetId,
   SendSMS,
@@ -19,6 +20,7 @@ import {
 } from '../decorators/auth.decorator';
 import { AuthService } from './auth.service';
 import { CheckJwtRepsonse } from './dto/check-jwt.response';
+import { CompareIdPhoneNumberRequest } from './dto/compare-id-phoneNumber.request';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
 import { GetIdRequest } from './dto/get-id.request';
 import { GetIdResponse } from './dto/get-id.response';
@@ -233,7 +235,7 @@ export class AuthController {
 
   /*
     description: 아이디 찾기 api
-    requires: phoneNumber
+    requires: GetIdRequest
     returns: GetIdResponse
   */
   @ApiOperation({ summary: '아이디 찾기 API' })
@@ -264,5 +266,58 @@ export class AuthController {
   @Get('/id')
   async getId(@GetId() getIdRequest: GetIdRequest) {
     return await this.authService.retrieveId(getIdRequest);
+  }
+
+  /*
+    description: 아이디 전화번호 대조 api
+    requires: CompareIdPhoneNumberRequest
+    returns: BaseResponse
+  */
+  @ApiOperation({ summary: '아이디 전화번호 대조 api' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2001,
+    description: '전화번호를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2002,
+    description: '전화번호의 형식을 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2003,
+    description: '아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2004,
+    description: '아이디의 길이를 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2014,
+    description: '존재하지 않는 유저입니다.',
+  })
+  @ApiResponse({
+    status: 2016,
+    description: '전화번호가 틀렸습니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiQuery({
+    description: '아이디 전화번호 대조 dto',
+    type: CompareIdPhoneNumberRequest,
+  })
+  @Get('/id-phonenumber')
+  async compareIdPhoneNumber(
+    @CompareIdPhoneNumber()
+    compareIdPhoneNumberRequest: CompareIdPhoneNumberRequest,
+  ) {
+    return await this.authService.compareIdPhoneNumber(
+      compareIdPhoneNumberRequest,
+    );
   }
 }

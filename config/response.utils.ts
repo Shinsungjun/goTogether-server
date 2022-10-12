@@ -84,6 +84,11 @@ export const response = {
     code: 2015,
     message: '아이디 혹은 비밀번호가 틀렸습니다.',
   },
+  USER_PHONENUMBER_ERROR: {
+    isSuccess: false,
+    code: 2016,
+    message: '전화번호가 틀렸습니다.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,

@@ -19,6 +19,7 @@ import { Payload } from './jwt/jwt.payload';
 import { JwtService } from '@nestjs/jwt';
 import { GetIdRequest } from './dto/get-id.request';
 import { AuthQuery } from './auth.query';
+import { CompareIdPhoneNumberRequest } from './dto/compare-id-phoneNumber.request';
 
 @Injectable()
 export class AuthService {
@@ -222,6 +223,37 @@ export class AuthService {
       return response.ERROR;
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  async compareIdPhoneNumber(
+    compareIdPhoneNumberRequest: CompareIdPhoneNumberRequest,
+  ) {
+    try {
+      // 가입된 아이디인지 확인
+      const isExistUserByUserName = await this.userRepository.findOne({
+        where: {
+          userName: compareIdPhoneNumberRequest.userName,
+          status: Status.ACTIVE,
+        },
+      });
+      if (!isExistUserByUserName) {
+        return response.NON_EXIST_USER;
+      }
+
+      // 유저의 전화번호인지 확인
+      if (
+        compareIdPhoneNumberRequest.phoneNumber !=
+        isExistUserByUserName.phoneNumber
+      ) {
+        return response.USER_PHONENUMBER_ERROR;
+      }
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
     }
   }
 }
