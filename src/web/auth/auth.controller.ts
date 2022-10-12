@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeader,
@@ -14,6 +14,7 @@ import {
   CompareIdPhoneNumber,
   GetDuplicateId,
   GetId,
+  PatchUserPassword,
   SendSMS,
   SignIn,
   VerifySMS,
@@ -21,9 +22,11 @@ import {
 import { AuthService } from './auth.service';
 import { CheckJwtRepsonse } from './dto/check-jwt.response';
 import { CompareIdPhoneNumberRequest } from './dto/compare-id-phoneNumber.request';
+import { CompareIdPhoneNumberResponse } from './dto/compare-id-phoneNumber.response';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
 import { GetIdRequest } from './dto/get-id.request';
 import { GetIdResponse } from './dto/get-id.response';
+import { PatchUserPasswordRequest } from './dto/patch-user-password.request';
 import { SendSMSRequest } from './dto/send-SMS.request';
 import { SignInRequest } from './dto/sign-in.request';
 import { SignInResponse } from './dto/sign-in.response';
@@ -261,6 +264,7 @@ export class AuthController {
     description: '서버 에러',
   })
   @ApiQuery({
+    description: '아이디 찾기 DTO',
     type: GetIdRequest,
   })
   @Get('/id')
@@ -271,13 +275,13 @@ export class AuthController {
   /*
     description: 아이디 전화번호 대조 api
     requires: CompareIdPhoneNumberRequest
-    returns: BaseResponse
+    returns: CompareIdPhoneNumberResponse
   */
-  @ApiOperation({ summary: '아이디 전화번호 대조 api' })
+  @ApiOperation({ summary: '아이디 전화번호 대조 API' })
   @ApiResponse({
     status: 1000,
     description: '성공',
-    type: BaseResponse,
+    type: CompareIdPhoneNumberResponse,
   })
   @ApiResponse({
     status: 2001,
@@ -308,7 +312,7 @@ export class AuthController {
     description: '서버 에러',
   })
   @ApiQuery({
-    description: '아이디 전화번호 대조 dto',
+    description: '아이디 전화번호 대조 DTO',
     type: CompareIdPhoneNumberRequest,
   })
   @Get('/id-phonenumber')
@@ -319,5 +323,51 @@ export class AuthController {
     return await this.authService.compareIdPhoneNumber(
       compareIdPhoneNumberRequest,
     );
+  }
+
+  /*
+    description: 비밀번호 변경 api
+    requires: PatchUserPasswordRequest
+    returns: BaseResponse
+  */
+  @ApiOperation({ summary: '비밀번호 변경 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2005,
+    description: '비밀번호를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2006,
+    description: '비밀번호의 형식을 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2017,
+    description: '유저 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2018,
+    description: '유저 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2019,
+    description: '기존과 같은 비밀번호입니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiBody({
+    description: '비밀번호 변경 DTO',
+    type: PatchUserPasswordRequest,
+  })
+  @Patch('/password')
+  async patchUserPassword(
+    @PatchUserPassword() patchUserPasswordRequest: PatchUserPasswordRequest,
+  ) {
+    return await this.authService.editUserPassword(patchUserPasswordRequest);
   }
 }

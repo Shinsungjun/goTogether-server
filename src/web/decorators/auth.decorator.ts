@@ -85,10 +85,10 @@ export const GetId = createParamDecorator(
     const getIdData = ctx.switchToHttp().getRequest().query;
 
     if (!getIdData.phoneNumber) {
-      throw new HttpException(response.USER_PHONENUMBER_EMPTY, 201);
+      throw new HttpException(response.USER_PHONENUMBER_EMPTY, 200);
     }
     if (!regularExp.phoneNumberRegex.test(getIdData.phoneNumber)) {
-      throw new HttpException(response.INVALID_USER_PHONENUMBER, 201);
+      throw new HttpException(response.INVALID_USER_PHONENUMBER, 200);
     }
 
     return getIdData;
@@ -99,23 +99,45 @@ export const CompareIdPhoneNumber = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const compareIdPhoneNumberData = ctx.switchToHttp().getRequest().query;
     if (!compareIdPhoneNumberData.phoneNumber) {
-      throw new HttpException(response.USER_PHONENUMBER_EMPTY, 201);
+      throw new HttpException(response.USER_PHONENUMBER_EMPTY, 200);
     }
     if (
       !regularExp.phoneNumberRegex.test(compareIdPhoneNumberData.phoneNumber)
     ) {
-      throw new HttpException(response.INVALID_USER_PHONENUMBER, 201);
+      throw new HttpException(response.INVALID_USER_PHONENUMBER, 200);
     }
     if (!compareIdPhoneNumberData.userName) {
-      throw new HttpException(response.USER_USERNAME_EMPTY, 201);
+      throw new HttpException(response.USER_USERNAME_EMPTY, 200);
     }
     if (
       compareIdPhoneNumberData.userName.length <= 0 ||
       compareIdPhoneNumberData.userName > 15
     ) {
-      throw new HttpException(response.INVALID_USER_USERNAME, 201);
+      throw new HttpException(response.INVALID_USER_USERNAME, 200);
     }
 
     return compareIdPhoneNumberData;
+  },
+);
+
+export const PatchUserPassword = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const patchUserPasswordData = ctx.switchToHttp().getRequest().body;
+
+    if (!patchUserPasswordData.userId) {
+      throw new HttpException(response.USERID_EMPTY, 200);
+    }
+    if (patchUserPasswordData.userId <= 0) {
+      throw new HttpException(response.INVALID_USERID, 200);
+    }
+
+    if (!patchUserPasswordData.password) {
+      throw new HttpException(response.USER_PASSWORD_EMPTY, 200);
+    }
+    if (!regularExp.passwordRegex.test(patchUserPasswordData.password)) {
+      throw new HttpException(response.INVALID_USER_PASSWORD, 200);
+    }
+
+    return patchUserPasswordData;
   },
 );

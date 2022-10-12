@@ -1,4 +1,4 @@
-import { CACHE_MANAGER, Inject } from '@nestjs/common';
+import { CACHE_MANAGER, HttpException, Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { makeResponse } from 'common/function.utils';
@@ -20,6 +20,7 @@ import { JwtService } from '@nestjs/jwt';
 import { GetIdRequest } from './dto/get-id.request';
 import { AuthQuery } from './auth.query';
 import { CompareIdPhoneNumberRequest } from './dto/compare-id-phoneNumber.request';
+import { PatchUserPasswordRequest } from './dto/patch-user-password.request';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +32,25 @@ export class AuthService {
     private connection: DataSource,
     private authQuery: AuthQuery,
   ) {}
+
+  async isExistUser(id: number) {
+    try {
+      // 유저 유무 확인
+      const user = await this.userRepository.findOne({
+        where: {
+          id: id,
+          status: Status.ACTIVE,
+        },
+      });
+      if (!user) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      throw new HttpException(response.ERROR, 200);
+    }
+  }
 
   private makeSignature() {
     const message = [];
@@ -193,6 +213,7 @@ export class AuthService {
 
   async retrieveId(getIdRequest: GetIdRequest) {
     const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
     try {
       // 가입된 전화번호인지 확인
       const isExistUserByPhoneNumber = await this.userRepository.findOne({
@@ -249,11 +270,68 @@ export class AuthService {
         return response.USER_PHONENUMBER_ERROR;
       }
 
-      const result = makeResponse(response.SUCCESS, undefined);
+      const data = {
+        userId: isExistUserByUserName.id,
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
 
       return result;
     } catch (error) {
       return response.ERROR;
+    }
+  }
+
+  async editUserPassword(patchUserPasswordRequest: PatchUserPasswordRequest) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // 존재하는 유저인지 확인
+      if (!(await this.isExistUser(patchUserPasswordRequest.userId))) {
+        return response.NON_EXIST_USER;
+      }
+
+      // 유저 조회
+      const user = await this.userRepository.findOne({
+        where: {
+          id: patchUserPasswordRequest.userId,
+          status: Status.ACTIVE,
+        },
+      });
+
+      // 기존과 같은 비밀번호인지 확인
+      const checkSamePassword = await bcrypt.compare(
+        patchUserPasswordRequest.password,
+        user.password,
+      );
+      if (checkSamePassword) {
+        return response.SAME_PASSWORD;
+      }
+
+      // 비밀번호 암호화
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword: string = await bcrypt.hash(
+        patchUserPasswordRequest.password,
+        salt,
+      );
+
+      // 비밀번호 수정
+      await queryRunner.manager.update(
+        User,
+        { id: patchUserPasswordRequest.userId },
+        { password: hashedPassword },
+      );
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
     }
   }
 }

@@ -89,6 +89,21 @@ export const response = {
     code: 2016,
     message: '전화번호가 틀렸습니다.',
   },
+  USERID_EMPTY: {
+    isSuccess: false,
+    code: 2017,
+    message: '유저 아이디를 입력해주세요.',
+  },
+  INVALID_USERID: {
+    isSuccess: false,
+    code: 2018,
+    message: '유저 아이디는 0보다 큰 값을 입력해주세요.',
+  },
+  SAME_PASSWORD: {
+    isSuccess: false,
+    code: 2019,
+    message: '기존과 같은 비밀번호입니다.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,
