@@ -52,17 +52,6 @@ export class AuthService {
 
   async sendSMS(sendSMSRequest: SendSMSRequest) {
     try {
-      // 가입된 전화번호인지 확인
-      const isExistUserByPhoneNumber = await this.userRepository.findOne({
-        where: {
-          phoneNumber: sendSMSRequest.phoneNumber,
-          status: Status.ACTIVE,
-        },
-      });
-      if (isExistUserByPhoneNumber) {
-        return response.EXIST_PHONENUMBER;
-      }
-
       // 캐시에 있는 키값 초기화
       await this.cacheManager.del(sendSMSRequest.phoneNumber);
 

@@ -50,10 +50,6 @@ export class AuthController {
     description: '전화번호의 형식을 확인해주세요.',
   })
   @ApiResponse({
-    status: 2009,
-    description: '존재하는 전화번호입니다.',
-  })
-  @ApiResponse({
     status: 4000,
     description: '서버 에러',
   })
