@@ -12,6 +12,7 @@ import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import {
   GetDuplicateId,
+  GetId,
   SendSMS,
   SignIn,
   VerifySMS,
@@ -19,6 +20,8 @@ import {
 import { AuthService } from './auth.service';
 import { CheckJwtRepsonse } from './dto/check-jwt.response';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
+import { GetIdRequest } from './dto/get-id.request';
+import { GetIdResponse } from './dto/get-id.response';
 import { SendSMSRequest } from './dto/send-SMS.request';
 import { SignInRequest } from './dto/sign-in.request';
 import { SignInResponse } from './dto/sign-in.response';
@@ -226,5 +229,40 @@ export class AuthController {
     } catch (error) {
       return response.ERROR;
     }
+  }
+
+  /*
+    description: 아이디 찾기 api
+    requires: phoneNumber
+    returns: GetIdResponse
+  */
+  @ApiOperation({ summary: '아이디 찾기 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: GetIdResponse,
+  })
+  @ApiResponse({
+    status: 2001,
+    description: '전화번호를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2002,
+    description: '전화번호의 형식을 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2014,
+    description: '존재하지 않는 유저입니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiQuery({
+    type: GetIdRequest,
+  })
+  @Get('/id')
+  async getId(@GetId() getIdRequest: GetIdRequest) {
+    return await this.authService.retrieveId(getIdRequest);
   }
 }

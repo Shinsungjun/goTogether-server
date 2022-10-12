@@ -5,7 +5,7 @@ import { makeResponse } from 'common/function.utils';
 import { Status } from 'common/variable.utils';
 import { response } from 'config/response.utils';
 import { User } from 'src/entity/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Cache } from 'cache-manager';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
 import { SendSMSRequest } from './dto/send-SMS.request';
@@ -17,6 +17,8 @@ import { SignInRequest } from './dto/sign-in.request';
 import * as bcrypt from 'bcrypt';
 import { Payload } from './jwt/jwt.payload';
 import { JwtService } from '@nestjs/jwt';
+import { GetIdRequest } from './dto/get-id.request';
+import { AuthQuery } from './auth.query';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +27,8 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private jwtSerivce: JwtService,
+    private connection: DataSource,
+    private authQuery: AuthQuery,
   ) {}
 
   private makeSignature() {
@@ -183,6 +187,41 @@ export class AuthService {
       return result;
     } catch (error) {
       return response.ERROR;
+    }
+  }
+
+  async retrieveId(getIdRequest: GetIdRequest) {
+    const queryRunner = this.connection.createQueryRunner();
+    try {
+      // 가입된 전화번호인지 확인
+      const isExistUserByPhoneNumber = await this.userRepository.findOne({
+        where: {
+          phoneNumber: getIdRequest.phoneNumber,
+          status: Status.ACTIVE,
+        },
+      });
+      if (!isExistUserByPhoneNumber) {
+        return response.NON_EXIST_USER;
+      }
+
+      const [userIdAndCreatedAt] = await queryRunner.query(
+        this.authQuery.retrieveUserIdAndCreatedAtQuery(
+          getIdRequest.phoneNumber,
+        ),
+      );
+
+      const data = {
+        userName: userIdAndCreatedAt.userName,
+        createdAt: userIdAndCreatedAt.createdAt,
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
     }
   }
 }

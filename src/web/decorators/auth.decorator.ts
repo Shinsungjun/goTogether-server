@@ -79,3 +79,18 @@ export const SignIn = createParamDecorator(
     return signInData;
   },
 );
+
+export const GetId = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const getIdData = ctx.switchToHttp().getRequest().query;
+
+    if (!getIdData.phoneNumber) {
+      throw new HttpException(response.USER_PHONENUMBER_EMPTY, 201);
+    }
+    if (!regularExp.phoneNumberRegex.test(getIdData.phoneNumber)) {
+      throw new HttpException(response.INVALID_USER_PHONENUMBER, 201);
+    }
+
+    return getIdData;
+  },
+);
