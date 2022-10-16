@@ -19,7 +19,10 @@ export const PostUser = createParamDecorator(
     if (!postUserData.userName) {
       throw new HttpException(response.USER_USERNAME_EMPTY, 201);
     }
-    if (postUserData.userName.length <= 0 || postUserData.userName > 15) {
+    if (
+      postUserData.userName.length <= 0 ||
+      postUserData.userName.length > 15
+    ) {
       throw new HttpException(response.INVALID_USER_USERNAME, 201);
     }
     if (!postUserData.password) {

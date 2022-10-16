@@ -14,7 +14,7 @@ export const GetDuplicateId = createParamDecorator(
     }
     if (
       getDuplicateIdData.userName.length <= 0 ||
-      getDuplicateIdData.userName > 15
+      getDuplicateIdData.userName.length > 15
     ) {
       throw new HttpException(response.INVALID_USER_USERNAME, 200);
     }
@@ -66,7 +66,7 @@ export const SignIn = createParamDecorator(
     if (!signInData.userName) {
       throw new HttpException(response.USER_USERNAME_EMPTY, 201);
     }
-    if (signInData.userName.length <= 0 || signInData.userName > 15) {
+    if (signInData.userName.length <= 0 || signInData.userName.length > 15) {
       throw new HttpException(response.INVALID_USER_USERNAME, 201);
     }
     if (!signInData.password) {
@@ -111,7 +111,7 @@ export const CompareIdPhoneNumber = createParamDecorator(
     }
     if (
       compareIdPhoneNumberData.userName.length <= 0 ||
-      compareIdPhoneNumberData.userName > 15
+      compareIdPhoneNumberData.userName.length > 15
     ) {
       throw new HttpException(response.INVALID_USER_USERNAME, 200);
     }
