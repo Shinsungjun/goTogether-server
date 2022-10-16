@@ -11,6 +11,20 @@ class PostUserResultData {
   createdUserId: number;
 
   @ApiProperty({
+    example: '핀',
+    description: '닉네임',
+  })
+  @IsString()
+  nickName: string;
+
+  @ApiProperty({
+    example: '010-4793-7231',
+    description: '전화번호',
+  })
+  @IsString()
+  phoneNumber: string;
+
+  @ApiProperty({
     example: 'asdjkbfasklqdalsdkalsdlajs',
     description: 'jwt',
   })

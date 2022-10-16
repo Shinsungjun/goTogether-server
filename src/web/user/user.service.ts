@@ -68,6 +68,8 @@ export class UserService {
 
       const data = {
         createUserId: createUserData.id,
+        nickName: createUserData.nickName,
+        phoneNumber: createUserData.phoneNumber,
         jwt: token,
       };
 
