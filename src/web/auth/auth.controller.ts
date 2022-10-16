@@ -224,10 +224,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async checkJwt(@Req() req: any) {
     try {
-      const userIdFromJwt = req.user.userId;
+      const userInfo = { ...req.user };
 
       const data = {
-        userId: userIdFromJwt,
+        userId: userInfo.userId,
+        nickName: userInfo.nickName,
+        phoneNumbner: userInfo.phoneNumber,
       };
 
       return makeResponse(response.SUCCESS, data);

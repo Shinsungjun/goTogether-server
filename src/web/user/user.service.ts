@@ -60,6 +60,8 @@ export class UserService {
       // create payload
       const payload: Payload = {
         userId: createUserData.id,
+        nickName: createUserData.nickName,
+        phoneNumber: createUserData.phoneNumber,
       };
 
       const token = this.jwtService.sign(payload);
