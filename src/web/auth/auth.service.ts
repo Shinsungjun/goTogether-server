@@ -195,11 +195,15 @@ export class AuthService {
 
       const payload: Payload = {
         userId: user.id,
+        nickName: user.nickName,
+        phoneNumber: user.phoneNumber,
       };
       const token = this.jwtSerivce.sign(payload);
 
       const data = {
         userId: user.id,
+        nickName: user.nickName,
+        phoneNumber: user.phoneNumber,
         jwt: token,
       };
 
