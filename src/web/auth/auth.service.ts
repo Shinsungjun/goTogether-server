@@ -21,6 +21,7 @@ import { GetIdRequest } from './dto/get-id.request';
 import { AuthQuery } from './auth.query';
 import { CompareIdPhoneNumberRequest } from './dto/compare-id-phoneNumber.request';
 import { PatchUserPasswordRequest } from './dto/patch-user-password.request';
+import { GetDuplicatePhoneNumberRequest } from './dto/get-duplicate-phoneNumber.request';
 
 @Injectable()
 export class AuthService {
@@ -336,6 +337,28 @@ export class AuthService {
       return response.ERROR;
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  async retrieveDuplicatePhoneNumber(
+    getDuplicatePhoneNumberRequest: GetDuplicatePhoneNumberRequest,
+  ) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: {
+          phoneNumber: getDuplicatePhoneNumberRequest.phoneNumber,
+          status: Status.ACTIVE,
+        },
+      });
+      if (user) {
+        return response.EXIST_PHONENUMBER;
+      }
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
     }
   }
 }

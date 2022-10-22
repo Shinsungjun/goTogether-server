@@ -13,6 +13,7 @@ import { response } from 'config/response.utils';
 import {
   CompareIdPhoneNumber,
   GetDuplicateId,
+  GetDuplicatePhoneNumber,
   GetId,
   PatchUserPassword,
   SendSMS,
@@ -24,6 +25,7 @@ import { CheckJwtRepsonse } from './dto/check-jwt.response';
 import { CompareIdPhoneNumberRequest } from './dto/compare-id-phoneNumber.request';
 import { CompareIdPhoneNumberResponse } from './dto/compare-id-phoneNumber.response';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
+import { GetDuplicatePhoneNumberRequest } from './dto/get-duplicate-phoneNumber.request';
 import { GetIdRequest } from './dto/get-id.request';
 import { GetIdResponse } from './dto/get-id.response';
 import { PatchUserPasswordRequest } from './dto/patch-user-password.request';
@@ -371,5 +373,47 @@ export class AuthController {
     @PatchUserPassword() patchUserPasswordRequest: PatchUserPasswordRequest,
   ) {
     return await this.authService.editUserPassword(patchUserPasswordRequest);
+  }
+
+  /*
+    description: 전화번호 중복 확인 api
+    requires: GetDuplicatePhoneNumberRequest
+    returns: BaseResponse
+  */
+  @ApiOperation({ summary: '전화번호 중복 확인 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2001,
+    description: '전화번호를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2002,
+    description: '전화번호의 형식을 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2009,
+    description: '존재하는 전화번호입니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiQuery({
+    name: 'phoneNumber',
+    description: '전화번호',
+    type: GetDuplicatePhoneNumberRequest,
+  })
+  @Get('/duplicate-phonenumber')
+  async getDuplicatePhoneNumber(
+    @GetDuplicatePhoneNumber()
+    getDuplicatePhoneNumberRequest: GetDuplicatePhoneNumberRequest,
+  ) {
+    return await this.authService.retrieveDuplicatePhoneNumber(
+      getDuplicatePhoneNumberRequest,
+    );
   }
 }

@@ -141,3 +141,20 @@ export const PatchUserPassword = createParamDecorator(
     return patchUserPasswordData;
   },
 );
+
+export const GetDuplicatePhoneNumber = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const getDuplicatePhoneNumberData = ctx.switchToHttp().getRequest().query;
+
+    if (!getDuplicatePhoneNumberData.phoneNumber) {
+      throw new HttpException(response.USER_PHONENUMBER_EMPTY, 200);
+    }
+    if (
+      !regularExp.phoneNumberRegex.test(getDuplicatePhoneNumberData.phoneNumber)
+    ) {
+      throw new HttpException(response.INVALID_USER_PHONENUMBER, 200);
+    }
+
+    return getDuplicatePhoneNumberData;
+  },
+);
