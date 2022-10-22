@@ -96,7 +96,7 @@ export class AuthService {
         countryCode: '82',
         from: messageOption.hostPhone,
         contentType: 'COMM',
-        content: `[가치가자]\n휴대폰 본인확인 인증번호 [${verifyCode}]`,
+        content: `[가치가자]\n본인확인 인증번호를 입력해주세요.\n[${verifyCode}]`,
         messages: [
           {
             to: sendSMSRequest.phoneNumber.replace(/-/g, ''),
