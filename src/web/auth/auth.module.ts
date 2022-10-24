@@ -19,5 +19,6 @@ import { AuthQuery } from './auth.query';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, AuthQuery],
+  exports: [AuthService],
 })
 export class AuthModule {}

@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './web/auth/auth.module';
+import { ScheduleModule } from './web/schedule/schedule.module';
 import { UserModule } from './web/user/user.module';
 
 @Module({
@@ -20,6 +21,7 @@ import { UserModule } from './web/user/user.module';
     }),
     UserModule,
     AuthModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,3 +3,8 @@ export enum Status {
   INACTIVE = 'INACTIVE',
   DELETED = 'DELETED',
 }
+
+export enum AirportServiceType {
+  DEPARTURE = 'DEPARTURE',
+  ARRIVAL = 'ARRIVAL',
+}
