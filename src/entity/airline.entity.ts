@@ -9,7 +9,7 @@ export class Airline {
   name: string;
 
   @Column()
-  logoImage: string;
+  logoImageUrl: string;
 
   @Column({ length: 15 })
   customerServiceNumber: string;

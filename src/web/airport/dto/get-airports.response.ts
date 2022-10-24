@@ -18,7 +18,7 @@ class AirportInfo {
   name: string;
 }
 
-class GetAirportResultData {
+class GetAirportsResultData {
   @ApiProperty({
     example: [
       {
@@ -32,15 +32,16 @@ class GetAirportResultData {
     ],
     description: '공항 리스트',
     isArray: true,
+    type: AirportInfo,
   })
   @IsArray()
   airports: Array<AirportInfo>;
 }
 
-export abstract class GetAirportResponse extends BaseResponse {
+export abstract class GetAirportsResponse extends BaseResponse {
   @ApiProperty({
     description: 'result 객체',
   })
   @IsObject()
-  result: GetAirportResultData;
+  result: GetAirportsResultData;
 }

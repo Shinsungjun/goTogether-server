@@ -2,7 +2,7 @@ import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { AirportService } from './airport.service';
-import { GetAirportResponse } from './dto/get-airports.response';
+import { GetAirportsResponse } from './dto/get-airports.response';
 
 @ApiTags('Airport API')
 @Controller('/web/airports')
@@ -13,7 +13,7 @@ export class AirportController {
   @ApiResponse({
     status: 1000,
     description: '성공',
-    type: GetAirportResponse,
+    type: GetAirportsResponse,
   })
   @ApiResponse({
     status: 2000,

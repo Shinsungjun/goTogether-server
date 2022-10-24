@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AirlineModule } from './web/airline/airline.module';
 import { AirportModule } from './web/airport/airport.module';
 import { AuthModule } from './web/auth/auth.module';
 import { ScheduleModule } from './web/schedule/schedule.module';
@@ -24,6 +25,7 @@ import { UserModule } from './web/user/user.module';
     AuthModule,
     ScheduleModule,
     AirportModule,
+    AirlineModule,
   ],
   controllers: [AppController],
   providers: [AppService],
