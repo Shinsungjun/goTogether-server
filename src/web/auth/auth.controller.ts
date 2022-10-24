@@ -213,6 +213,10 @@ export class AuthController {
     type: CheckJwtRepsonse,
   })
   @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
     status: 4000,
     description: '서버 에러',
   })

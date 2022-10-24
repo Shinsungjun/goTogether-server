@@ -32,7 +32,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
 
     if (!user) {
-      throw new HttpException(response.CHECK_JWT_TOKEN, 201);
+      throw new HttpException(response.CHECK_JWT_TOKEN, 200);
     }
     return payload;
   }
