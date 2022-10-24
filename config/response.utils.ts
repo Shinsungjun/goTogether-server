@@ -194,6 +194,11 @@ export const response = {
     code: 2037,
     message: '존재하지 않는 항공사 서비스입니다.',
   },
+  AIRPORT_ID_EMPTY: {
+    isSuccess: false,
+    code: 2038,
+    message: '공항 아이디를 입력해주세요.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,
