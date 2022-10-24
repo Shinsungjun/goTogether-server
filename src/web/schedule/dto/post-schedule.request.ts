@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDateString, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 export class PostScheduleRequest {
   @ApiProperty({
@@ -10,17 +10,17 @@ export class PostScheduleRequest {
   userId: number;
 
   @ApiProperty({
-    example: '2022-10-24',
-    description: '출발 날짜',
+    example: '2022-10-24 18:00',
+    description: '출발 날짜, 시간',
   })
-  @IsDateString()
+  @IsString()
   startAt: string;
 
   @ApiProperty({
-    example: '2022-10-24',
-    description: '도착 날짜',
+    example: '2022-10-24 20:00',
+    description: '도착 날짜, 시간',
   })
-  @IsDateString()
+  @IsString()
   endAt: string;
 
   @ApiProperty({

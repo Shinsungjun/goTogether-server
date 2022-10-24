@@ -112,7 +112,7 @@ export const response = {
   INVALID_DATE_FORMAT: {
     isSuccess: false,
     code: 2021,
-    message: '날짜는 YYYY-MM-DD 형식으로 입력해주세요.',
+    message: '날짜는 YYYY-MM-DD HH:MM 형식으로 입력해주세요.',
   },
   END_AT_EMPTY: {
     isSuccess: false,
@@ -198,6 +198,31 @@ export const response = {
     isSuccess: false,
     code: 2038,
     message: '공항 아이디를 입력해주세요.',
+  },
+  GET_SCHEDULES_TYPE_EMPTY: {
+    isSuccess: false,
+    code: 2039,
+    message: '조회 type을 입력해주세요.',
+  },
+  INVALID_GET_SCHEDULES_TYPE: {
+    isSuccess: false,
+    code: 2040,
+    message: '조회 type은 future와 past 중 하나를 입력해주세요.',
+  },
+  PAGE_EMPTY: {
+    isSuccess: false,
+    code: 2041,
+    message: '페이지 번호를 입력해주세요.',
+  },
+  INVALID_PAGE: {
+    isSuccess: false,
+    code: 2042,
+    message: '유효하지 않은 페이지 값입니다.',
+  },
+  NON_EXIST_PAGE: {
+    isSuccess: false,
+    code: 2043,
+    message: '존재하지 않는 페이지입니다.',
   },
   ERROR: {
     isSuccess: false,

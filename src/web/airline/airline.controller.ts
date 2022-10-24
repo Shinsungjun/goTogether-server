@@ -18,6 +18,11 @@ import { GetAirlinesResponse } from './dto/get-airlines.response';
 export class AirlineController {
   constructor(private readonly airlineService: AirlineService) {}
 
+  /*
+    description: 항공사 리스트 조회 api
+    requires: x
+    returns: GetAirlinesResponse
+  */
   @ApiOperation({ summary: '항공사 리스트 조회 API' })
   @ApiResponse({
     status: 1000,
@@ -44,6 +49,11 @@ export class AirlineController {
     return this.airlineService.retrieveAirlines();
   }
 
+  /*
+    description: 항공사 서비스 리스트 조회 api
+    requires: GetAirlineServicesRequest
+    returns: GetAirlineServicesResponse
+  */
   @ApiOperation({ summary: '항공사 서비스 리스트 조회 API' })
   @ApiResponse({
     status: 1000,

@@ -9,6 +9,7 @@ import { ScheduleAirlineService } from 'src/entity/scheduleAirlineService.entity
 import { ScheduleAirportService } from 'src/entity/scheduleAirportService.entity';
 import { AuthModule } from '../auth/auth.module';
 import { ScheduleController } from './schedule.controller';
+import { ScheduleQuery } from './schedule.query';
 import { ScheduleService } from './schedule.service';
 
 @Module({
@@ -25,6 +26,6 @@ import { ScheduleService } from './schedule.service';
     ]),
   ],
   controllers: [ScheduleController],
-  providers: [ScheduleService],
+  providers: [ScheduleService, ScheduleQuery],
 })
 export class ScheduleModule {}

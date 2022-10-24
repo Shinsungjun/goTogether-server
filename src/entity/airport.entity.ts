@@ -8,9 +8,6 @@ export class Airport {
   @Column({ length: 45 })
   name: string;
 
-  @Column()
-  logoImage: string;
-
   @Column({ length: 15 })
   customerServiceNumber: string;
 

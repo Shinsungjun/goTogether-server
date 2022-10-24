@@ -5,6 +5,9 @@ export class Schedule {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  userId: number;
+
   @Column({ length: 10 })
   name: string;
 

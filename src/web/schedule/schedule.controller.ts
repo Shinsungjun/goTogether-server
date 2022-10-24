@@ -1,14 +1,17 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeader,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
-import { PostSchedule } from '../decorators/schedule.decortor';
+import { GetSchedules, PostSchedule } from '../decorators/schedule.decortor';
+import { GetSchedulesRequest } from './dto/get-schedules.request';
+import { GetSchedulesResponse } from './dto/get-schedules.response';
 import { PostScheduleRequest } from './dto/post-schedule.request';
 import { PostScheduleResponse } from './dto/post-schedule.response';
 import { ScheduleService } from './schedule.service';
@@ -51,7 +54,7 @@ export class ScheduleController {
   })
   @ApiResponse({
     status: 2021,
-    description: '날짜는 YYYY-MM-DD 형식으로 입력해주세요.',
+    description: '날짜는 YYYY-MM-DD HH:MM 형식으로 입력해주세요.',
   })
   @ApiResponse({
     status: 2022,
@@ -135,5 +138,74 @@ export class ScheduleController {
     }
 
     return await this.scheduleService.createSchedule(postScheduleRequest);
+  }
+
+  /*
+    description: 일정 리스트 조회 api
+    requires: GetSchedulesRequest
+    returns: GetSchedulesResponse
+  */
+  @ApiOperation({ summary: '일정 리스트 조회 api' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: GetSchedulesResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2039,
+    description: '조회 type을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2040,
+    description: '조회 type은 future와 past 중 하나를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2041,
+    description: '페이지 번호를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2042,
+    description: '유효하지 않은 페이지 값입니다.',
+  })
+  @ApiResponse({
+    status: 2043,
+    description: '존재하지 않는 페이지입니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @ApiQuery({
+    description: '등록된 일정: future, 지난 일정: past',
+    name: 'type',
+    type: 'string',
+  })
+  @ApiQuery({
+    description: '페이지 번호',
+    name: 'page',
+    type: 'number',
+    required: false,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getSchedules(
+    @Req() req: any,
+    @GetSchedules() getSchedulesRequest: GetSchedulesRequest,
+  ) {
+    const userId = req.user.userId;
+    return await this.scheduleService.retrieveSchedules(
+      userId,
+      getSchedulesRequest,
+    );
   }
 }

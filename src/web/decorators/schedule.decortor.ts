@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   HttpException,
 } from '@nestjs/common';
+import { GetSchedulesType } from 'common/variable.utils';
 import { regularExp } from 'config/regular.exp';
 import { response } from 'config/response.utils';
 
@@ -63,5 +64,26 @@ export const PostSchedule = createParamDecorator(
     }
 
     return postScheduleData;
+  },
+);
+
+export const GetSchedules = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const getSchedulesData = ctx.switchToHttp().getRequest().query;
+
+    if (!getSchedulesData.type) {
+      throw new HttpException(response.GET_SCHEDULES_TYPE_EMPTY, 200);
+    }
+    if (!GetSchedulesType.includes(getSchedulesData.type)) {
+      throw new HttpException(response.INVALID_GET_SCHEDULES_TYPE, 200);
+    }
+    if (getSchedulesData.type && !getSchedulesData.page) {
+      throw new HttpException(response.PAGE_EMPTY, 200);
+    }
+    if (getSchedulesData.type && getSchedulesData.page <= 0) {
+      throw new HttpException(response.INVALID_PAGE, 200);
+    }
+
+    return getSchedulesData;
   },
 );

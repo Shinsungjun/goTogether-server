@@ -6,13 +6,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Airport } from 'src/entity/airport.entity';
 import { DataSource, Repository } from 'typeorm';
 import { Airline } from 'src/entity/airline.entity';
-import { AirportServiceType, Status } from 'common/variable.utils';
+import {
+  AirportServiceType,
+  GetSchedulesType,
+  Status,
+} from 'common/variable.utils';
 import { AirportService } from 'src/entity/airportSerivce.entity';
 import { AirlineService } from 'src/entity/airlineService.entity';
 import { ScheduleAirlineService } from 'src/entity/scheduleAirlineService.entity';
 import { ScheduleAirportService } from 'src/entity/scheduleAirportService.entity';
 import { Schedule } from 'src/entity/schedule.entity';
 import { makeResponse } from 'common/function.utils';
+import { GetSchedulesRequest } from './dto/get-schedules.request';
+import { ScheduleQuery } from './schedule.query';
 
 @Injectable()
 export class ScheduleService {
@@ -33,6 +39,7 @@ export class ScheduleService {
     @InjectRepository(Schedule)
     private scheduleRepository: Repository<Schedule>,
 
+    private scheduleQuery: ScheduleQuery,
     private connection: DataSource,
   ) {}
   async createSchedule(postScheduleRequest: PostScheduleRequest) {
@@ -72,6 +79,7 @@ export class ScheduleService {
       // 일정 생성
       let scheduleRegister = new Schedule();
       scheduleRegister.name = postScheduleRequest.name;
+      scheduleRegister.userId = postScheduleRequest.userId;
       scheduleRegister.startAt = postScheduleRequest.startAt;
       scheduleRegister.endAt = postScheduleRequest.endAt;
       scheduleRegister.departureAirportId =
@@ -152,6 +160,64 @@ export class ScheduleService {
       return result;
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async retrieveSchedules(
+    userId: number,
+    getSchedulesRequest: GetSchedulesRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      let schedules;
+      let data;
+      // 등록된 일정
+      if (getSchedulesRequest.type == 'future') {
+        schedules = await queryRunner.query(
+          this.scheduleQuery.retrieveFutureSchedulesQuery(userId),
+        );
+        data = {
+          schedules: schedules,
+        };
+      } else if (getSchedulesRequest.type == 'past') {
+        const pageSize = 5;
+        const offset: number = pageSize * (getSchedulesRequest.page - 1);
+        // 총 개수
+        const total = await this.scheduleRepository
+          .createQueryBuilder()
+          .select('Schedule.id')
+          .groupBy('Schedule.id')
+          .where('Schedule.userId = (:userId)', { userId: userId })
+          .andWhere('TIMESTAMPDIFF(DAY, now(), Schedule.startAt) <= -1')
+          .getMany();
+
+        // 존재하는 페이지인지 검증
+        if (getSchedulesRequest.page > Math.ceil(total.length / pageSize)) {
+          return response.NON_EXIST_PAGE;
+        }
+
+        schedules = await queryRunner.query(
+          this.scheduleQuery.retrievePastSchedulesQuery(
+            userId,
+            offset,
+            pageSize,
+          ),
+        );
+
+        data = {
+          scheduleCount: total.length,
+          schedules: schedules,
+        };
+      }
+
+      const result = makeResponse(response.SUCCESS, data);
+
+      return result;
+    } catch (error) {
       return response.ERROR;
     } finally {
       await queryRunner.release();

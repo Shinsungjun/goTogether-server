@@ -18,6 +18,11 @@ import { GetAirportsResponse } from './dto/get-airports.response';
 export class AirportController {
   constructor(private readonly airportService: AirportService) {}
 
+  /*
+    description: 공항 리스트 조회 api
+    requires: x
+    returns: GetAirportsResponse
+  */
   @ApiOperation({ summary: '공항 리스트 조회 API' })
   @ApiResponse({
     status: 1000,
@@ -44,6 +49,11 @@ export class AirportController {
     return await this.airportService.retrieveAirports();
   }
 
+  /*
+    description: 공항 서비스 리스트 조회 api
+    requires: GetAirportServicesRequest
+    returns: GetAirportServicesResponse
+  */
   @ApiOperation({ summary: '공항 서비스 리스트 조회 API' })
   @ApiResponse({
     status: 1000,

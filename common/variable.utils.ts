@@ -8,3 +8,5 @@ export enum AirportServiceType {
   DEPARTURE = 'DEPARTURE',
   ARRIVAL = 'ARRIVAL',
 }
+
+export const GetSchedulesType = ['future', 'past'];
