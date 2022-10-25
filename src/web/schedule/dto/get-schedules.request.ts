@@ -16,4 +16,13 @@ export class GetSchedulesRequest {
   })
   @IsNumber()
   page: number;
+
+  @ApiProperty({
+    example: 'latest',
+    description:
+      '정렬 기준 latest: 최신순, oldest: 오래된순, boardingTime: 탑승시간순 (type이 past일 경우에만 보냄)',
+    required: false,
+  })
+  @IsString()
+  sort: string;
 }

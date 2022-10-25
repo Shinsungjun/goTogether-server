@@ -3,7 +3,7 @@ import {
   ExecutionContext,
   HttpException,
 } from '@nestjs/common';
-import { GetSchedulesType } from 'common/variable.utils';
+import { GetSchedulesSort, GetSchedulesType } from 'common/variable.utils';
 import { regularExp } from 'config/regular.exp';
 import { response } from 'config/response.utils';
 
@@ -77,13 +77,20 @@ export const GetSchedules = createParamDecorator(
     if (!GetSchedulesType.includes(getSchedulesData.type)) {
       throw new HttpException(response.INVALID_GET_SCHEDULES_TYPE, 200);
     }
-    if (getSchedulesData.type && !getSchedulesData.page) {
-      throw new HttpException(response.PAGE_EMPTY, 200);
+    if (getSchedulesData.type == 'past') {
+      if (!getSchedulesData.page) {
+        throw new HttpException(response.PAGE_EMPTY, 200);
+      }
+      if (getSchedulesData.page <= 0) {
+        throw new HttpException(response.INVALID_PAGE, 200);
+      }
+      if (!getSchedulesData.sort) {
+        throw new HttpException(response.SORT_EMPTY, 200);
+      }
+      if (!GetSchedulesSort.includes(getSchedulesData.sort)) {
+        throw new HttpException(response.INVALID_GET_SCHEDULES_SORT, 200);
+      }
+      return getSchedulesData;
     }
-    if (getSchedulesData.type && getSchedulesData.page <= 0) {
-      throw new HttpException(response.INVALID_PAGE, 200);
-    }
-
-    return getSchedulesData;
   },
 );

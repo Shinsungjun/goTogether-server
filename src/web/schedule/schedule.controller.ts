@@ -176,6 +176,15 @@ export class ScheduleController {
     description: '존재하지 않는 페이지입니다.',
   })
   @ApiResponse({
+    status: 2044,
+    description: '정렬 기준을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2045,
+    description:
+      '정렬 기준은 latest, oldest, boardingTime 중 하나를 입력해주세요.',
+  })
+  @ApiResponse({
     status: 4000,
     description: '서버 에러',
   })
@@ -191,9 +200,16 @@ export class ScheduleController {
     type: 'string',
   })
   @ApiQuery({
-    description: '페이지 번호',
+    description: '페이지 번호 (type이 past일 경우에만 보냄)',
     name: 'page',
     type: 'number',
+    required: false,
+  })
+  @ApiQuery({
+    description:
+      '정렬 기준 latest: 최신순, oldest: 오래된순, boardingTime: 탑승시간순 (type이 past일 경우에만 보냄)',
+    name: 'sort',
+    type: 'string',
     required: false,
   })
   @UseGuards(JwtAuthGuard)

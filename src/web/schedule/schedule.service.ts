@@ -200,11 +200,24 @@ export class ScheduleService {
           return response.NON_EXIST_PAGE;
         }
 
+        // 정렬 기준
+        let sortType: string;
+        if (getSchedulesRequest.sort == 'latest') {
+          sortType = 'order by Schedule.createdAt desc';
+        }
+        if (getSchedulesRequest.sort == 'oldest') {
+          sortType = 'order by Schedule.createdAt';
+        }
+        if (getSchedulesRequest.sort == 'boardingTime') {
+          sortType = 'order by Schedule.startAt, Schedule.createdAt desc';
+        }
+
         schedules = await queryRunner.query(
           this.scheduleQuery.retrievePastSchedulesQuery(
             userId,
             offset,
             pageSize,
+            sortType,
           ),
         );
 

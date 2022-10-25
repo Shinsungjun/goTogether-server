@@ -107,7 +107,7 @@ class GetSchedulesResultData {
         airlineName: '대한항공',
       },
       {
-        scheduleId: 1,
+        scheduleId: 2,
         scheduleName: '여수 여행',
         startAt: '2022.03.04',
         endAt: '2022.05.03',

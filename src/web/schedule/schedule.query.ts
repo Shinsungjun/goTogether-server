@@ -6,6 +6,7 @@ export class ScheduleQuery {
     userId: number,
     offset: number,
     pageSize: number,
+    sortType: string,
   ): string => {
     return `
       SELECT Schedule.id                                                   as scheduleId,
@@ -23,7 +24,8 @@ export class ScheduleQuery {
               join Airport as arrivalAirport on arrivalAirport.id = Schedule.arrivalAirportId
               join Airline on Airline.id = Schedule.airlineId
       WHERE TIMESTAMPDIFF(DAY, now(), Schedule.startAt) <= -1 and Schedule.userId = ${userId}
-      order by Schedule.createdAt
+      group by Schedule.id
+      ${sortType}
       LIMIT ${offset}, ${pageSize};
     `;
   };
@@ -47,7 +49,8 @@ export class ScheduleQuery {
               join Airport as arrivalAirport on arrivalAirport.id = Schedule.arrivalAirportId
               join Airline on Airline.id = Schedule.airlineId
       WHERE TIMESTAMPDIFF(DAY, now(), Schedule.startAt) > -1 and Schedule.userId = ${userId}
-      order by Schedule.createdAt;
+      group by Schedule.id
+      order by Schedule.startAt;
     `;
   };
 }

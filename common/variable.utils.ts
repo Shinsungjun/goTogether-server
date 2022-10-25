@@ -10,3 +10,5 @@ export enum AirportServiceType {
 }
 
 export const GetSchedulesType = ['future', 'past'];
+
+export const GetSchedulesSort = ['latest', 'oldest', 'boardingTime'];

@@ -224,6 +224,16 @@ export const response = {
     code: 2043,
     message: '존재하지 않는 페이지입니다.',
   },
+  SORT_EMPTY: {
+    isSuccess: false,
+    code: 2044,
+    message: '정렬 기준을 입력해주세요.',
+  },
+  INVALID_GET_SCHEDULES_SORT: {
+    isSuccess: false,
+    code: 2045,
+    message: '정렬 기준은 latest, oldest, boardingTime 중 하나를 입력해주세요.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,
