@@ -234,6 +234,26 @@ export const response = {
     code: 2045,
     message: '정렬 기준은 latest, oldest, boardingTime 중 하나를 입력해주세요.',
   },
+  SCHEDULE_ID_EMPTY: {
+    isSuccess: false,
+    code: 2046,
+    message: '일정 아이디를 입력해주세요.',
+  },
+  INVALID_SCHEDULE_ID: {
+    isSuccess: false,
+    code: 2047,
+    message: '일정 아이디는 0보다 큰 값을 입력해주세요.',
+  },
+  NON_EXIST_SCHEDULE: {
+    isSuccess: false,
+    code: 2048,
+    message: '존재하지 않는 일정입니다.',
+  },
+  SCHEDULE_USER_PERMISSION_DENIED: {
+    isSuccess: false,
+    code: 2049,
+    message: '유저의 일정이 아닙니다.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,

@@ -19,6 +19,7 @@ import { Schedule } from 'src/entity/schedule.entity';
 import { makeResponse } from 'common/function.utils';
 import { GetSchedulesRequest } from './dto/get-schedules.request';
 import { ScheduleQuery } from './schedule.query';
+import { PatchScheduleStatusRequest } from './dto/patch-schedule-status.request';
 
 @Injectable()
 export class ScheduleService {
@@ -231,6 +232,66 @@ export class ScheduleService {
 
       return result;
     } catch (error) {
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  // 일정 삭제
+  async removeSchedule(
+    userId: number,
+    patchScheduleStatusRequest: PatchScheduleStatusRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // 존재하는 일정인지 확인
+      let schedule = await queryRunner.manager.findOneBy(Schedule, {
+        id: patchScheduleStatusRequest.scheduleId,
+        status: Status.ACTIVE,
+      });
+      if (!schedule) {
+        return response.NON_EXIST_SCHEDULE;
+      }
+
+      // 해당 user의 일정인지 확인
+      if (schedule.userId != userId) {
+        return response.SCHEDULE_USER_PERMISSION_DENIED;
+      }
+
+      // delete schedule
+      await queryRunner.manager.update(
+        Schedule,
+        { id: patchScheduleStatusRequest.scheduleId },
+        { status: Status.DELETED },
+      );
+
+      // delete schedule airport service
+      await queryRunner.manager.update(
+        ScheduleAirportService,
+        {
+          scheduleId: patchScheduleStatusRequest.scheduleId,
+        },
+        { status: Status.DELETED },
+      );
+
+      // delete schedule airline service
+      await queryRunner.manager.update(
+        ScheduleAirlineService,
+        {
+          scheduleId: patchScheduleStatusRequest.scheduleId,
+        },
+        { status: Status.DELETED },
+      );
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
       return response.ERROR;
     } finally {
       await queryRunner.release();

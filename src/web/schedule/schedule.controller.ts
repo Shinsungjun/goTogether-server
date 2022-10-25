@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeader,
@@ -7,11 +7,17 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
-import { GetSchedules, PostSchedule } from '../decorators/schedule.decortor';
+import {
+  GetSchedules,
+  PatchScheduleStatus,
+  PostSchedule,
+} from '../decorators/schedule.decortor';
 import { GetSchedulesRequest } from './dto/get-schedules.request';
 import { GetSchedulesResponse } from './dto/get-schedules.response';
+import { PatchScheduleStatusRequest } from './dto/patch-schedule-status.request';
 import { PostScheduleRequest } from './dto/post-schedule.request';
 import { PostScheduleResponse } from './dto/post-schedule.response';
 import { ScheduleService } from './schedule.service';
@@ -222,6 +228,66 @@ export class ScheduleController {
     return await this.scheduleService.retrieveSchedules(
       userId,
       getSchedulesRequest,
+    );
+  }
+
+  /*
+    description: 일정 삭제 api
+    requires: PatchScheduleStatusRequest
+    returns: BaseResponse
+  */
+  @ApiOperation({ summary: '일정 삭제 api' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2046,
+    description: '일정 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2047,
+    description: '일정 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2048,
+    description: '존재하지 않는 일정입니다.',
+  })
+  @ApiResponse({
+    status: 2049,
+    description: '유저의 일정이 아닙니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @ApiBody({
+    description: '일정 삭제 dto',
+    type: PatchScheduleStatusRequest,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Patch('/status')
+  async patchScheduleStatus(
+    @Req() req: any,
+    @PatchScheduleStatus()
+    patchScheduleStatusRequest: PatchScheduleStatusRequest,
+  ) {
+    const userId = req.user.userId;
+
+    return await this.scheduleService.removeSchedule(
+      userId,
+      patchScheduleStatusRequest,
     );
   }
 }

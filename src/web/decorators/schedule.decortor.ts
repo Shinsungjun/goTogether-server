@@ -94,3 +94,18 @@ export const GetSchedules = createParamDecorator(
     }
   },
 );
+
+export const PatchScheduleStatus = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const patchScheduleStatusData = ctx.switchToHttp().getRequest().body;
+
+    if (!patchScheduleStatusData.scheduleId) {
+      throw new HttpException(response.SCHEDULE_ID_EMPTY, 200);
+    }
+    if (patchScheduleStatusData.scheduleId <= 0) {
+      throw new HttpException(response.INVALID_SCHEDULE_ID, 200);
+    }
+
+    return patchScheduleStatusData;
+  },
+);

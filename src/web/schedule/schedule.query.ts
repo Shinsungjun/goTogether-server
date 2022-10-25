@@ -23,7 +23,7 @@ export class ScheduleQuery {
               join Airport as departureAirport on departureAirport.id = Schedule.departureAirportId
               join Airport as arrivalAirport on arrivalAirport.id = Schedule.arrivalAirportId
               join Airline on Airline.id = Schedule.airlineId
-      WHERE TIMESTAMPDIFF(DAY, now(), Schedule.startAt) <= -1 and Schedule.userId = ${userId}
+      WHERE TIMESTAMPDIFF(DAY, now(), Schedule.startAt) <= -1 and Schedule.userId = ${userId} and Schedule.status = 'ACTIVE'
       group by Schedule.id
       ${sortType}
       LIMIT ${offset}, ${pageSize};
@@ -48,7 +48,7 @@ export class ScheduleQuery {
               join Airport as departureAirport on departureAirport.id = Schedule.departureAirportId
               join Airport as arrivalAirport on arrivalAirport.id = Schedule.arrivalAirportId
               join Airline on Airline.id = Schedule.airlineId
-      WHERE TIMESTAMPDIFF(DAY, now(), Schedule.startAt) > -1 and Schedule.userId = ${userId}
+      WHERE TIMESTAMPDIFF(DAY, now(), Schedule.startAt) > -1 and Schedule.userId = ${userId} and Schedule.status = 'ACTIVE'
       group by Schedule.id
       order by Schedule.startAt;
     `;
