@@ -20,7 +20,7 @@ export class AirportService {
   async retrieveAirports() {
     try {
       const airports = await this.airportRepository.find({
-        select: ['id', 'name'],
+        select: ['id', 'name', 'region'],
         where: {
           status: Status.ACTIVE,
         },

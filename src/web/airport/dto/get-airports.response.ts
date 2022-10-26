@@ -16,6 +16,13 @@ class AirportInfo {
   })
   @IsString()
   name: string;
+
+  @ApiProperty({
+    example: '인천',
+    description: '지역 이름',
+  })
+  @IsString()
+  region: string;
 }
 
 class GetAirportsResultData {
@@ -24,10 +31,12 @@ class GetAirportsResultData {
       {
         id: 1,
         name: '인천국제공항',
+        region: '인천',
       },
       {
         id: 2,
         name: '김포국제공항',
+        region: '김포',
       },
     ],
     description: '공항 리스트',
