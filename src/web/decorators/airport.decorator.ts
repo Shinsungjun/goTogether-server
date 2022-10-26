@@ -19,3 +19,18 @@ export const GetAirportServices = createParamDecorator(
     return getAirportServicesData;
   },
 );
+
+export const GetAirport = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const getAirportData = ctx.switchToHttp().getRequest().params;
+
+    if (!getAirportData.airportId) {
+      throw new HttpException(response.AIRPORT_ID_EMPTY, 200);
+    }
+    if (getAirportData.airportId <= 0) {
+      throw new HttpException(response.INVALID_AIRPORT_ID, 200);
+    }
+
+    return getAirportData;
+  },
+);

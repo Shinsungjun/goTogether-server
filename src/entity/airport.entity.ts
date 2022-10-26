@@ -11,6 +11,9 @@ export class Airport {
   @Column({ length: 5 })
   region: string;
 
+  @Column()
+  website: string;
+
   @Column({ length: 15 })
   customerServiceNumber: string;
 

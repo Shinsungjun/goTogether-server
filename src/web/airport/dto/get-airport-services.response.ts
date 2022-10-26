@@ -38,7 +38,7 @@ class GetAirportServicesResultData {
   airportServices: Array<AirportServicesInfo>;
 }
 
-export abstract class GetAirportServicesResponse {
+export abstract class GetAirportServicesResponse extends BaseResponse {
   @ApiProperty({
     description: 'result 객체',
   })

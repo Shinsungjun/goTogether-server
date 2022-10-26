@@ -11,6 +11,9 @@ export class Airline {
   @Column()
   logoImageUrl: string;
 
+  @Column()
+  website: string;
+
   @Column({ length: 15 })
   customerServiceNumber: string;
 

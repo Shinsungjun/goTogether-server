@@ -7,10 +7,15 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
-import { GetAirportServices } from '../decorators/airport.decorator';
+import {
+  GetAirport,
+  GetAirportServices,
+} from '../decorators/airport.decorator';
 import { AirportService } from './airport.service';
 import { GetAirportServicesRequest } from './dto/get-airport-services.request';
 import { GetAirportServicesResponse } from './dto/get-airport-services.response';
+import { GetAirportRequest } from './dto/get-airport.request';
+import { GetAirportResponse } from './dto/get-airport.response';
 import { GetAirportsResponse } from './dto/get-airports.response';
 
 @ApiTags('Airport API')
@@ -69,6 +74,10 @@ export class AirportController {
     description: '공항 아이디는 0보다 큰 값을 입력해주세요.',
   })
   @ApiResponse({
+    status: 2034,
+    description: '존재하지 않는 공항입니다.',
+  })
+  @ApiResponse({
     status: 2038,
     description: '공항 아이디를 입력해주세요.',
   })
@@ -96,5 +105,53 @@ export class AirportController {
     return await this.airportService.retrieveAirportServices(
       getAirportServicesRequest,
     );
+  }
+
+  /*
+    description: 공항 상세 조회 api
+    requires: GetAirportRequest
+    returns: GetAirportResponse
+  */
+  @ApiOperation({ summary: '공항 상세 조회 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: GetAirportResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2026,
+    description: '공항 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2034,
+    description: '존재하지 않는 공항입니다.',
+  })
+  @ApiResponse({
+    status: 2038,
+    description: '공항 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @ApiParam({
+    description: '공항 아이디',
+    name: 'airportId',
+    type: 'number',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('/:airportId')
+  async getAirport(@GetAirport() getAirportRequest: GetAirportRequest) {
+    return await this.airportService.retrieveAirport(getAirportRequest);
   }
 }
