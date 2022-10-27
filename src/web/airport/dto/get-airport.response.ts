@@ -78,6 +78,7 @@ class AirportDetailInfo {
     ],
     description: '공항 서비스 리스트',
     type: AirportServicesInfo,
+    isArray: true,
   })
   @IsArray()
   airportServices: Array<AirportServicesInfo>;

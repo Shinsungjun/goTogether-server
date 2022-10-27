@@ -9,6 +9,7 @@ import { GetAirportServicesRequest } from './dto/get-airport-services.request';
 import { AirportService as AirportServiceEntity } from 'src/entity/airportSerivce.entity';
 import { GetAirportRequest } from './dto/get-airport.request';
 import { AirportQuery } from './airport.query';
+import { GetAirportReviewsRequest } from './dto/get-airport-reviews.request';
 
 @Injectable()
 export class AirportService {
@@ -107,6 +108,86 @@ export class AirportService {
 
       const data = {
         airport: airport,
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async retrieveAirportReviews(
+    getAirportReviewsRequest: GetAirportReviewsRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      // 존재하는 공항인지 확인
+      if (
+        !(await this.airportRepository.findOneBy({
+          id: getAirportReviewsRequest.airportId,
+          status: Status.ACTIVE,
+        }))
+      ) {
+        return response.NON_EXIST_AIRPORT;
+      }
+
+      // 필터링 쿼리
+      let filterQuery: string = ``;
+      if (getAirportReviewsRequest.airportServiceId) {
+        if (typeof getAirportReviewsRequest.airportServiceId == 'string') {
+          // filter 한 개만 존재
+          filterQuery = `AND airportServiceId = ${getAirportReviewsRequest.airportServiceId}`;
+        } else {
+          for (const airportServiceId of getAirportReviewsRequest.airportServiceId) {
+            filterQuery =
+              filterQuery + `and AirportService.id = ${airportServiceId} `;
+          }
+        }
+      }
+
+      // 페이징
+      const pageSize = 5;
+      const offset: number = pageSize * (getAirportReviewsRequest.page - 1);
+      const total = await queryRunner.query(
+        this.airportQuery.retrieveTotalAirportReviewsQuery(
+          getAirportReviewsRequest.airportId,
+          filterQuery,
+        ),
+      );
+
+      // 존재하는 페이지인지 검증
+      if (getAirportReviewsRequest.page > Math.ceil(total.length / pageSize)) {
+        return response.NON_EXIST_PAGE;
+      }
+
+      let airportReviews = await queryRunner.query(
+        this.airportQuery.retrieveAirportReviewsQuery(
+          getAirportReviewsRequest.airportId,
+          offset,
+          pageSize,
+          filterQuery,
+        ),
+      );
+
+      for (let airportReview of airportReviews) {
+        const airportReviewedServices = await queryRunner.query(
+          this.airportQuery.retrieveAirportReviewedServices(
+            airportReview.airportReviewId,
+          ),
+        );
+        airportReview['reviewedAirportServices'] = airportReviewedServices.map(
+          (x) => x.name,
+        );
+      }
+
+      const data = {
+        total: total.length,
+        airportReviews: airportReviews,
       };
 
       const result = makeResponse(response.SUCCESS, data);

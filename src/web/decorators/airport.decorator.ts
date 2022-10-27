@@ -34,3 +34,28 @@ export const GetAirport = createParamDecorator(
     return getAirportData;
   },
 );
+
+export const GetAirportReviews = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const getAirportReviewsData = ctx.switchToHttp().getRequest();
+
+    if (!getAirportReviewsData.params.airportId) {
+      throw new HttpException(response.AIRPORT_ID_EMPTY, 200);
+    }
+    if (getAirportReviewsData.params.airportId <= 0) {
+      throw new HttpException(response.INVALID_AIRPORT_ID, 200);
+    }
+    if (!getAirportReviewsData.query.page) {
+      throw new HttpException(response.PAGE_EMPTY, 200);
+    }
+    if (getAirportReviewsData.query.page <= 0) {
+      throw new HttpException(response.INVALID_PAGE, 200);
+    }
+
+    return {
+      airportId: getAirportReviewsData.params.airportId,
+      page: getAirportReviewsData.query.page,
+      airportServiceId: getAirportReviewsData.query.airportServiceId,
+    };
+  },
+);

@@ -20,4 +20,58 @@ export class AirportQuery {
       group by Airport.id
     `;
   };
+
+  retrieveTotalAirportReviewsQuery = (
+    airportId: number,
+    filterQuery: string,
+  ): string => {
+    return `
+      SELECT AirportReview.id as airportReviewId,
+            User.nickName,
+            AirportReview.score,
+            AirportReview.content,
+            DATE_FORMAT(AirportReview.createdAt, '%Y.%m.%d') as createdAt
+      FROM ReviewAirportService
+          join AirportReview on AirportReview.id = ReviewAirportService.airportReviewId
+          join User on User.id = AirportReview.userId
+          join AirportService on AirportService.id = ReviewAirportService.airportServiceId
+      WHERE AirportReview.airportId = ${airportId} and AirportReview.status = 'ACTIVE' ${filterQuery}
+      group by AirportReview.id
+      order by AirportReview.createdAt desc
+    `;
+  };
+
+  retrieveAirportReviewsQuery = (
+    airportId: number,
+    offset: number,
+    pageSize: number,
+    filterQuery: string,
+  ): string => {
+    return `
+      SELECT AirportReview.id as airportReviewId,
+            User.nickName,
+            AirportReview.score,
+            AirportReview.content,
+            DATE_FORMAT(AirportReview.createdAt, '%y.%m.%d') as createdAt
+      FROM ReviewAirportService
+          join AirportReview on AirportReview.id = ReviewAirportService.airportReviewId
+          join User on User.id = AirportReview.userId
+          join AirportService on AirportService.id = ReviewAirportService.airportServiceId
+      WHERE AirportReview.airportId = ${airportId} and AirportReview.status = 'ACTIVE' ${filterQuery}
+      group by AirportReview.id
+      order by AirportReview.createdAt desc
+      LIMIT ${offset}, ${pageSize};
+    `;
+  };
+
+  retrieveAirportReviewedServices = (airportReviewId: number): string => {
+    return `
+      SELECT AirportService.name
+      FROM ReviewAirportService
+          join AirportReview on AirportReview.id = ReviewAirportService.airportReviewId
+          join AirportService on AirportService.id = ReviewAirportService.airportServiceId
+      WHERE AirportReview.id = ${airportReviewId}
+      group by AirportService.name;
+    `;
+  };
 }
