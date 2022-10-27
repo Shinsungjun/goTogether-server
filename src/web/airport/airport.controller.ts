@@ -164,7 +164,7 @@ export class AirportController {
     requires: GetAirportReviewsRequest,
     returns: GetAirportReviewsResponse
   */
-  @ApiOperation({ summary: '공항 리뷰 리스트 조회 api' })
+  @ApiOperation({ summary: '공항 리뷰 리스트 조회 API' })
   @ApiResponse({
     status: 1000,
     description: '성공',

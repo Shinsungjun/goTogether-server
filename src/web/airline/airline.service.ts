@@ -10,14 +10,23 @@ import { AirlineService as AirlineServiceEntity } from 'src/entity/airlineServic
 import { GetAirlineRequest } from './dto/get-airline.request';
 import { AirlineQuery } from './airline.query';
 import { GetAirlineReviewsRequest } from './dto/get-airline-reviews.request';
+import { PostAirlineReviewRequest } from './dto/post-airline-review.request';
+import { AuthService } from '../auth/auth.service';
+import { AirlineReview } from 'src/entity/airlineReview.entity';
+import { ReviewAirlineService } from 'src/entity/reviewAirlineService.entity';
 
 @Injectable()
 export class AirlineService {
   constructor(
+    private readonly authService: AuthService,
     @InjectRepository(Airline)
     private airlineRepository: Repository<Airline>,
     @InjectRepository(AirlineServiceEntity)
     private airlineServiceRepository: Repository<AirlineServiceEntity>,
+    @InjectRepository(AirlineReview)
+    private airlineReviewRepository: Repository<AirlineReview>,
+    @InjectRepository(ReviewAirlineService)
+    private reviewAirlineServiceRepository: Repository<ReviewAirlineService>,
 
     private airlineQuery: AirlineQuery,
     private connection: DataSource,
@@ -115,7 +124,7 @@ export class AirlineService {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     try {
-      // 존재하는 공항인지 확인
+      // 존재하는 항공사인지 확인
       if (
         !(await this.airlineRepository.findOneBy({
           id: getAirlineReviewsRequest.airlineId,
@@ -183,6 +192,77 @@ export class AirlineService {
 
       return result;
     } catch (error) {
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async createAirlineReview(
+    postAirlineReviewRequest: PostAirlineReviewRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // 존재하는 유저인지 확인
+      if (
+        !(await this.authService.isExistUser(postAirlineReviewRequest.userId))
+      ) {
+        return response.NON_EXIST_USER;
+      }
+
+      // 존재하는 항공사인지 확인
+      if (
+        !(await this.airlineRepository.findOneBy({
+          id: postAirlineReviewRequest.airlineId,
+          status: Status.ACTIVE,
+        }))
+      ) {
+        return response.NON_EXIST_AIRLINE;
+      }
+
+      // 리뷰 생성
+      let airlineReviewRegister = new AirlineReview();
+      airlineReviewRegister.userId = postAirlineReviewRequest.userId;
+      airlineReviewRegister.airlineId = postAirlineReviewRequest.airlineId;
+      airlineReviewRegister.content = postAirlineReviewRequest.content;
+      airlineReviewRegister.score = postAirlineReviewRequest.score;
+
+      const createdAirlineReview = await queryRunner.manager.save(
+        airlineReviewRegister,
+      );
+
+      // 항공사 서비스 리뷰 생성
+      for (const airlineServiceId of postAirlineReviewRequest.airlineServiceIds) {
+        // 존재하는 서비스인지 확인
+        if (
+          !(await this.airlineServiceRepository.findOneBy({
+            id: airlineServiceId,
+            airlineId: postAirlineReviewRequest.airlineId,
+            status: Status.ACTIVE,
+          }))
+        ) {
+          return response.NON_EXIST_AIRLINE_SERVICE;
+        }
+        let reviewAirlineServiceRegister = new ReviewAirlineService();
+        reviewAirlineServiceRegister.airlineReviewId = createdAirlineReview.id;
+        reviewAirlineServiceRegister.airlineServiceId = airlineServiceId;
+
+        await queryRunner.manager.save(reviewAirlineServiceRegister);
+      }
+
+      const data = {
+        createdReviewId: createdAirlineReview.id,
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
+
+      await queryRunner.commitTransaction();
+
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
       return response.ERROR;
     } finally {
       await queryRunner.release();

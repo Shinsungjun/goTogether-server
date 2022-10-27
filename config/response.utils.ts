@@ -254,6 +254,26 @@ export const response = {
     code: 2049,
     message: '유저의 일정이 아닙니다.',
   },
+  REVIEW_CONTENT_EMPTY: {
+    isSuccess: false,
+    code: 2050,
+    message: '리뷰의 내용을 입력해주세요.',
+  },
+  INVALID_REVIEW_CONTENT: {
+    isSuccess: false,
+    code: 2051,
+    message: '리뷰의 내용은 200자 이내로 입력해주세요.',
+  },
+  REVIEW_SCORE_EMPTY: {
+    isSuccess: false,
+    code: 2052,
+    message: '별점을 입력해주세요.',
+  },
+  INVALID_REVIEW_SCORE: {
+    isSuccess: false,
+    code: 2053,
+    message: '별점은 0점과 5점 사이로 입력해주세요.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,

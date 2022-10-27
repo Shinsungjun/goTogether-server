@@ -59,3 +59,33 @@ export const GetAirlineReviews = createParamDecorator(
     };
   },
 );
+
+export const PostAirlineReview = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const postAirlineReviewData = ctx.switchToHttp().getRequest().body;
+
+    if (!postAirlineReviewData.airlineId) {
+      throw new HttpException(response.AIRLINE_ID_EMPTY, 201);
+    }
+    if (postAirlineReviewData.airlineId <= 0) {
+      throw new HttpException(response.INVALID_AIRLINE_ID, 201);
+    }
+    if (!postAirlineReviewData.airlineServiceIds) {
+      throw new HttpException(response.AIRLINE_SERVICE_IDS_EMPTY, 201);
+    }
+    if (!postAirlineReviewData.content) {
+      throw new HttpException(response.REVIEW_CONTENT_EMPTY, 201);
+    }
+    if (postAirlineReviewData.content.length > 200) {
+      throw new HttpException(response.INVALID_REVIEW_CONTENT, 201);
+    }
+    if (!postAirlineReviewData.score) {
+      throw new HttpException(response.REVIEW_SCORE_EMPTY, 201);
+    }
+    if (postAirlineReviewData.score > 5 || postAirlineReviewData.score < 0) {
+      throw new HttpException(response.INVALID_REVIEW_SCORE, 201);
+    }
+
+    return postAirlineReviewData;
+  },
+);
