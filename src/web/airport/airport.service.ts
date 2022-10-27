@@ -9,15 +9,24 @@ import { GetAirportServicesRequest } from './dto/get-airport-services.request';
 import { AirportService as AirportServiceEntity } from 'src/entity/airportSerivce.entity';
 import { GetAirportRequest } from './dto/get-airport.request';
 import { AirportQuery } from './airport.query';
-import { GetAirportReviewsRequest } from './dto/get-airport-reviews.request';
+import { GetAirportReviewsRequest } from './dto/get-airport-review.request';
+import { PostAirportReviewRequest } from './dto/post-airport-review.request';
+import { AuthService } from '../auth/auth.service';
+import { AirportReview } from 'src/entity/airportReview.entity';
+import { ReviewAirportService } from 'src/entity/reviewAirportService.entity';
 
 @Injectable()
 export class AirportService {
   constructor(
+    private authService: AuthService,
     @InjectRepository(Airport)
     private airportRepository: Repository<Airport>,
     @InjectRepository(AirportServiceEntity)
     private airportServiceRepository: Repository<AirportServiceEntity>,
+    @InjectRepository(AirportReview)
+    private airportReviewRepository: Repository<AirportReview>,
+    @InjectRepository(ReviewAirportService)
+    private reviewAirportServiceRepository: Repository<ReviewAirportService>,
 
     private airportQuery: AirportQuery,
     private connection: DataSource,
@@ -194,6 +203,77 @@ export class AirportService {
 
       return result;
     } catch (error) {
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async createAirportReview(
+    postAirportReviewRequest: PostAirportReviewRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // 존재하는 유저인지 확인
+      if (
+        !(await this.authService.isExistUser(postAirportReviewRequest.userId))
+      ) {
+        return response.NON_EXIST_USER;
+      }
+
+      // 존재하는 공항인지 확인
+      if (
+        !(await this.airportRepository.findOneBy({
+          id: postAirportReviewRequest.airportId,
+          status: Status.ACTIVE,
+        }))
+      ) {
+        return response.NON_EXIST_AIRPORT;
+      }
+
+      // 리뷰 생성
+      let airportReviewRegister = new AirportReview();
+      airportReviewRegister.userId = postAirportReviewRequest.userId;
+      airportReviewRegister.airportId = postAirportReviewRequest.airportId;
+      airportReviewRegister.content = postAirportReviewRequest.content;
+      airportReviewRegister.score = postAirportReviewRequest.score;
+
+      const createdAirportReview = await queryRunner.manager.save(
+        airportReviewRegister,
+      );
+
+      // 공항 서비스 리뷰 생성
+      for (const airportServiceId of postAirportReviewRequest.airportServiceIds) {
+        // 존재하는 서비스인지 확인
+        if (
+          !(await this.airportServiceRepository.findOneBy({
+            id: airportServiceId,
+            airportId: postAirportReviewRequest.airportId,
+            status: Status.ACTIVE,
+          }))
+        ) {
+          return response.NON_EXIST_AIRPORT_SERVICE;
+        }
+        let reviewAirportServiceRegister = new ReviewAirportService();
+        reviewAirportServiceRegister.airportReviewId = createdAirportReview.id;
+        reviewAirportServiceRegister.airportServiceId = airportServiceId;
+
+        await queryRunner.manager.save(reviewAirportServiceRegister);
+      }
+      const data = {
+        createdReviewId: createdAirportReview.id,
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
+
+      await queryRunner.commitTransaction();
+
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
       return response.ERROR;
     } finally {
       await queryRunner.release();

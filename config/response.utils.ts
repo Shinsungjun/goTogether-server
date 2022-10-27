@@ -274,6 +274,11 @@ export const response = {
     code: 2053,
     message: '별점은 0점과 5점 사이로 입력해주세요.',
   },
+  AIRPORT_SERVICE_IDS_EMPTY: {
+    isSuccess: false,
+    code: 2054,
+    message: '공항의 서비스 아이디 리스트를 입력해주세요.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,

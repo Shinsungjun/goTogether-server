@@ -59,3 +59,33 @@ export const GetAirportReviews = createParamDecorator(
     };
   },
 );
+
+export const PostAirportReview = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const postAirportReviewData = ctx.switchToHttp().getRequest().body;
+
+    if (!postAirportReviewData.airportId) {
+      throw new HttpException(response.AIRPORT_ID_EMPTY, 201);
+    }
+    if (postAirportReviewData.airportId <= 0) {
+      throw new HttpException(response.INVALID_AIRPORT_ID, 201);
+    }
+    if (!postAirportReviewData.airportServiceIds) {
+      throw new HttpException(response.AIRPORT_SERVICE_IDS_EMPTY, 201);
+    }
+    if (!postAirportReviewData.content) {
+      throw new HttpException(response.REVIEW_CONTENT_EMPTY, 201);
+    }
+    if (postAirportReviewData.content.length > 200) {
+      throw new HttpException(response.INVALID_REVIEW_CONTENT, 201);
+    }
+    if (!postAirportReviewData.score) {
+      throw new HttpException(response.REVIEW_SCORE_EMPTY, 201);
+    }
+    if (postAirportReviewData.score > 5 || postAirportReviewData.score < 0) {
+      throw new HttpException(response.INVALID_REVIEW_SCORE, 201);
+    }
+
+    return postAirportReviewData;
+  },
+);

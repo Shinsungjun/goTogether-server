@@ -294,7 +294,7 @@ export class AirlineController {
     required: true,
   })
   @ApiBody({
-    description: '항공사 리뷰 생성 api',
+    description: '항공사 리뷰 생성 dto',
     type: PostAirlineReviewRequest,
   })
   @UseGuards(JwtAuthGuard)
