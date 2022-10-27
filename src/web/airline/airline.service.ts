@@ -9,6 +9,7 @@ import { GetAirlineServicesRequest } from './dto/get-airline-services.request';
 import { AirlineService as AirlineServiceEntity } from 'src/entity/airlineService.entity';
 import { GetAirlineRequest } from './dto/get-airline.request';
 import { AirlineQuery } from './airline.query';
+import { GetAirlineReviewsRequest } from './dto/get-airline-reviews.request';
 
 @Injectable()
 export class AirlineService {
@@ -96,6 +97,86 @@ export class AirlineService {
 
       const data = {
         airline: airline,
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async retrieveAirlineReviews(
+    getAirlineReviewsRequest: GetAirlineReviewsRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      // 존재하는 공항인지 확인
+      if (
+        !(await this.airlineRepository.findOneBy({
+          id: getAirlineReviewsRequest.airlineId,
+          status: Status.ACTIVE,
+        }))
+      ) {
+        return response.NON_EXIST_AIRLINE;
+      }
+
+      // 필터링 쿼리
+      let filterQuery: string = ``;
+      if (getAirlineReviewsRequest.airlineServiceId) {
+        if (typeof getAirlineReviewsRequest.airlineServiceId == 'string') {
+          // filter 한 개만 존재
+          filterQuery = `AND airlineServiceId = ${getAirlineReviewsRequest.airlineServiceId}`;
+        } else {
+          for (const airlineServiceId of getAirlineReviewsRequest.airlineServiceId) {
+            filterQuery =
+              filterQuery + `and AirlineService.id = ${airlineServiceId} `;
+          }
+        }
+      }
+
+      // 페이징
+      const pageSize = 5;
+      const offset: number = pageSize * (getAirlineReviewsRequest.page - 1);
+      const total = await queryRunner.query(
+        this.airlineQuery.retrieveTotalAirlineReviewsQuery(
+          getAirlineReviewsRequest.airlineId,
+          filterQuery,
+        ),
+      );
+
+      // 존재하는 페이지인지 검증
+      if (getAirlineReviewsRequest.page > Math.ceil(total.length / pageSize)) {
+        return response.NON_EXIST_PAGE;
+      }
+
+      let airlineReviews = await queryRunner.query(
+        this.airlineQuery.retrieveAirlineReviewsQuery(
+          getAirlineReviewsRequest.airlineId,
+          offset,
+          pageSize,
+          filterQuery,
+        ),
+      );
+
+      for (let airlineReview of airlineReviews) {
+        const airlineReviewedServices = await queryRunner.query(
+          this.airlineQuery.retrieveAirlineReviewedServices(
+            airlineReview.airlineReviewId,
+          ),
+        );
+        airlineReview['reviewedAirlineServices'] = airlineReviewedServices.map(
+          (x) => x.name,
+        );
+      }
+
+      const data = {
+        total: total.length,
+        airlineReview: airlineReviews,
       };
 
       const result = makeResponse(response.SUCCESS, data);

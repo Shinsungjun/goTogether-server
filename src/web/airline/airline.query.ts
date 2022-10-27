@@ -20,4 +20,60 @@ export class AirlineQuery {
       group by Airline.id;
     `;
   };
+
+  retrieveTotalAirlineReviewsQuery = (
+    airlineId: number,
+    filterQuery: string,
+  ): string => {
+    return `
+      SELECT AirlineReview.id                                 as AirlineReviewId,
+            User.nickName,
+            AirlineReview.score,
+            AirlineReview.content,
+            DATE_FORMAT(AirlineReview.createdAt, '%Y.%m.%d') as createdAt
+      FROM ReviewAirlineService
+              join AirlineReview on AirlineReview.id = ReviewAirlineService.airlineReviewId
+              join User on User.id = AirlineReview.userId
+              join AirportService on AirportService.id = ReviewAirlineService.airlineServiceId
+      WHERE AirlineReview.airlineId = ${airlineId}
+        and AirlineReview.status = 'ACTIVE' ${filterQuery}
+      group by AirlineReview.id
+      order by AirlineReview.createdAt desc;
+    `;
+  };
+
+  retrieveAirlineReviewsQuery = (
+    airlineId: number,
+    offset: number,
+    pageSize: number,
+    filterQuery: string,
+  ): string => {
+    return `
+      SELECT AirlineReview.id                                 as airlineReviewId,
+            User.nickName,
+            AirlineReview.score,
+            AirlineReview.content,
+            DATE_FORMAT(AirlineReview.createdAt, '%y.%m.%d') as createdAt
+      FROM ReviewAirlineService
+              join AirlineReview on AirlineReview.id = ReviewAirlineService.airlineReviewId
+              join User on User.id = AirlineReview.userId
+              join AirportService on AirportService.id = ReviewAirlineService.airlineServiceId
+      WHERE AirlineReview.airlineId = ${airlineId}
+        and AirlineReview.status = 'ACTIVE' ${filterQuery}
+      group by AirlineReview.id
+      order by AirlineReview.createdAt desc
+      LIMIT ${offset}, ${pageSize};
+    `;
+  };
+
+  retrieveAirlineReviewedServices = (airlineReviewId: number): string => {
+    return `
+      SELECT AirlineService.name
+      FROM ReviewAirlineService
+              join AirlineReview on AirlineReview.id = ReviewAirlineService.airlineReviewId
+              join AirlineService on AirlineService.id = ReviewAirlineService.airlineServiceId
+      WHERE AirlineReview.id = ${airlineReviewId}
+      group by AirlineService.name;
+    `;
+  };
 }
