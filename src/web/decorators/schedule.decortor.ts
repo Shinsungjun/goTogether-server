@@ -109,3 +109,18 @@ export const PatchScheduleStatus = createParamDecorator(
     return patchScheduleStatusData;
   },
 );
+
+export const GetSchedule = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const getScheduleData = ctx.switchToHttp().getRequest().params;
+
+    if (!getScheduleData.scheduleId) {
+      throw new HttpException(response.SCHEDULE_ID_EMPTY, 200);
+    }
+    if (getScheduleData.scheduleId <= 0) {
+      throw new HttpException(response.INVALID_SCHEDULE_ID, 200);
+    }
+
+    return getScheduleData;
+  },
+);

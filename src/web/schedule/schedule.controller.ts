@@ -3,6 +3,7 @@ import {
   ApiBody,
   ApiHeader,
   ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiResponse,
   ApiTags,
@@ -11,10 +12,13 @@ import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import {
+  GetSchedule,
   GetSchedules,
   PatchScheduleStatus,
   PostSchedule,
 } from '../decorators/schedule.decortor';
+import { GetScheduleRequest } from './dto/get-schedule.request';
+import { GetScheduleResponse } from './dto/get-schedule.response';
 import { GetSchedulesRequest } from './dto/get-schedules.request';
 import { GetSchedulesResponse } from './dto/get-schedules.response';
 import { PatchScheduleStatusRequest } from './dto/patch-schedule-status.request';
@@ -289,5 +293,56 @@ export class ScheduleController {
       userId,
       patchScheduleStatusRequest,
     );
+  }
+
+  /*
+    description: 일정 상세 조회 api
+    requires: GetScheduleRequest
+    returns: GetScheduleResponse
+  */
+  @ApiOperation({ summary: '일정 상세 조회 api' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: GetScheduleResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2046,
+    description: '일정 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2047,
+    description: '일정 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2048,
+    description: '존재하지 않는 일정입니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @ApiParam({
+    name: 'scheduleId',
+    type: 'number',
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('/:scheduleId')
+  async getSchedule(
+    @Req() req: any,
+    @GetSchedule() getScheduleRequest: GetScheduleRequest,
+  ) {
+    return await this.scheduleService.retrieveSchedule(getScheduleRequest);
   }
 }

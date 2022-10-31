@@ -20,6 +20,7 @@ import { makeResponse } from 'common/function.utils';
 import { GetSchedulesRequest } from './dto/get-schedules.request';
 import { ScheduleQuery } from './schedule.query';
 import { PatchScheduleStatusRequest } from './dto/patch-schedule-status.request';
+import { GetScheduleRequest } from './dto/get-schedule.request';
 
 @Injectable()
 export class ScheduleService {
@@ -292,6 +293,59 @@ export class ScheduleService {
       return result;
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async retrieveSchedule(getScheduleRequest: GetScheduleRequest) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      let [schedule] = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleQuery(getScheduleRequest.scheduleId),
+      );
+
+      if (!schedule) {
+        return response.NON_EXIST_SCHEDULE;
+      }
+
+      // 출발 공항의 선택된 서비스 조회
+      const departureAirportService = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportService(
+          AirportServiceType.DEPARTURE,
+          getScheduleRequest.scheduleId,
+        ),
+      );
+      schedule['departureAirportService'] = departureAirportService.map(
+        (x) => x.name,
+      );
+
+      const arrivalAirportService = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportService(
+          AirportServiceType.ARRIVAL,
+          getScheduleRequest.scheduleId,
+        ),
+      );
+      schedule['arrivalAirportService'] = arrivalAirportService.map(
+        (x) => x.name,
+      );
+
+      const airlineService = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirlineService(
+          getScheduleRequest.scheduleId,
+        ),
+      );
+      schedule['airlineService'] = airlineService.map((x) => x.name);
+
+      const data = {
+        schedule: schedule,
+      };
+      const result = makeResponse(response.SUCCESS, data);
+
+      return result;
+    } catch (error) {
       return response.ERROR;
     } finally {
       await queryRunner.release();
