@@ -21,6 +21,7 @@ import { GetSchedulesRequest } from './dto/get-schedules.request';
 import { ScheduleQuery } from './schedule.query';
 import { PatchScheduleStatusRequest } from './dto/patch-schedule-status.request';
 import { GetScheduleRequest } from './dto/get-schedule.request';
+import { PatchScheduleRequest } from './dto/patch-schedule.request';
 
 @Injectable()
 export class ScheduleService {
@@ -346,6 +347,124 @@ export class ScheduleService {
 
       return result;
     } catch (error) {
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async editSchedule(
+    userId: Number,
+    patchScheduleRequest: PatchScheduleRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // 존재하는 일정인지 확인
+      let schedule = await queryRunner.manager.findOneBy(Schedule, {
+        id: patchScheduleRequest.scheduleId,
+        status: Status.ACTIVE,
+      });
+      if (!schedule) {
+        return response.NON_EXIST_SCHEDULE;
+      }
+
+      // 해당 user의 일정인지 확인
+      if (schedule.userId != userId) {
+        return response.SCHEDULE_USER_PERMISSION_DENIED;
+      }
+
+      // update schedule
+      await queryRunner.manager.update(
+        Schedule,
+        { id: patchScheduleRequest.scheduleId },
+        {
+          startAt: patchScheduleRequest.startAt,
+          endAt: patchScheduleRequest.endAt,
+          departureAirportId: patchScheduleRequest.departureAirportId,
+          arrivalAirportId: patchScheduleRequest.arrivalAirportId,
+          airlineId: patchScheduleRequest.airlineId,
+        },
+      );
+
+      // update scheduleDepartureAirportService
+      await queryRunner.manager.delete(ScheduleAirportService, {
+        scheduleId: patchScheduleRequest.scheduleId,
+      });
+      await queryRunner.manager.delete(ScheduleAirlineService, {
+        scheduleId: patchScheduleRequest.scheduleId,
+      });
+      // 출발 서비스
+      for (const departureAirportServiceId of patchScheduleRequest.departureAirportServiceIds) {
+        // 존재하는 서비스인지 확인
+        if (
+          !(await this.airportSerivceRepository.findOneBy({
+            id: departureAirportServiceId,
+            airportId: patchScheduleRequest.departureAirportId,
+            status: Status.ACTIVE,
+          }))
+        ) {
+          return response.NON_EXIST_AIRPORT_SERVICE;
+        }
+        let departureScheduleAirportServiceRegister =
+          new ScheduleAirportService();
+        departureScheduleAirportServiceRegister.scheduleId =
+          patchScheduleRequest.scheduleId;
+        departureScheduleAirportServiceRegister.airportServiceId =
+          departureAirportServiceId;
+        departureScheduleAirportServiceRegister.type =
+          AirportServiceType.DEPARTURE;
+        await queryRunner.manager.save(departureScheduleAirportServiceRegister);
+      }
+      // 도착 서비스
+      for (const arrivalAirportServiceId of patchScheduleRequest.arrivalAirportServiceIds) {
+        // 존재하는 서비스인지 확인
+        if (
+          !(await this.airportSerivceRepository.findOneBy({
+            id: arrivalAirportServiceId,
+            airportId: patchScheduleRequest.arrivalAirportId,
+            status: Status.ACTIVE,
+          }))
+        ) {
+          return response.NON_EXIST_AIRPORT_SERVICE;
+        }
+        let arrivalScheduleAirportServiceRegister =
+          new ScheduleAirportService();
+        arrivalScheduleAirportServiceRegister.scheduleId =
+          patchScheduleRequest.scheduleId;
+        arrivalScheduleAirportServiceRegister.airportServiceId =
+          arrivalAirportServiceId;
+        arrivalScheduleAirportServiceRegister.type = AirportServiceType.ARRIVAL;
+        await queryRunner.manager.save(arrivalScheduleAirportServiceRegister);
+      }
+      // 항공사 서비스
+      for (const airlineServiceId of patchScheduleRequest.airlineServiceIds) {
+        // 존재하는 서비스인지 확인
+        if (
+          !(await this.airlineSerivceRepository.findOneBy({
+            id: airlineServiceId,
+            airlineId: patchScheduleRequest.airlineId,
+            status: Status.ACTIVE,
+          }))
+        ) {
+          return response.NON_EXIST_AIRLINE_SERVICE;
+        }
+        let scheduleAirlineServiceRegister = new ScheduleAirlineService();
+        scheduleAirlineServiceRegister.scheduleId =
+          patchScheduleRequest.scheduleId;
+        scheduleAirlineServiceRegister.airlineServiceId = airlineServiceId;
+
+        await queryRunner.manager.save(scheduleAirlineServiceRegister);
+      }
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      await queryRunner.commitTransaction();
+
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
       return response.ERROR;
     } finally {
       await queryRunner.release();
