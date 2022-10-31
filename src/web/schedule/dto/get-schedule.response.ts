@@ -146,6 +146,7 @@ class Schedule {
   @ApiProperty({
     example: ['임산부, 유아, 어린이', '교통약자 동반'],
     description: '출발 공항 서비스',
+    isArray: true,
   })
   @IsArray()
   departureAirportService: Array<String>;
@@ -153,6 +154,7 @@ class Schedule {
   @ApiProperty({
     example: ['임산부, 유아, 어린이', '교통약자 동반'],
     description: '도착 공항 서비스',
+    isArray: true,
   })
   @IsArray()
   arrivalAirportService: Array<String>;
@@ -160,6 +162,7 @@ class Schedule {
   @ApiProperty({
     example: ['임산부, 유아, 어린이', '교통약자 동반'],
     description: '항공사 서비스',
+    isArray: true,
   })
   @IsArray()
   airlineService: Array<String>;
