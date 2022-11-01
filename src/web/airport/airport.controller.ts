@@ -278,6 +278,18 @@ export class AirportController {
     description: '공항 아이디를 입력해주세요.',
   })
   @ApiResponse({
+    status: 2047,
+    description: '일정 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2048,
+    description: '존재하지 않는 일정입니다.',
+  })
+  @ApiResponse({
+    status: 2049,
+    description: '유저의 일정이 아닙니다.',
+  })
+  @ApiResponse({
     status: 2050,
     description: '리뷰의 내용을 입력해주세요.',
   })

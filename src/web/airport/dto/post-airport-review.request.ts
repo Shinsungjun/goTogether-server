@@ -17,6 +17,14 @@ export class PostAirportReviewRequest {
   airportId: number;
 
   @ApiProperty({
+    example: 1,
+    description: '일정 아이디 (지난 일정에서 리뷰 작성 할때만)',
+    required: false,
+  })
+  @IsNumber()
+  scheduleId: number;
+
+  @ApiProperty({
     example: [1, 2],
     description: '공항 서비스 아이디 (선택안함 시 빈 리스트)',
   })
