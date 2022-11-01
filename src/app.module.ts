@@ -6,6 +6,7 @@ import { AirlineModule } from './web/airline/airline.module';
 import { AirportModule } from './web/airport/airport.module';
 import { AuthModule } from './web/auth/auth.module';
 import { ScheduleModule } from './web/schedule/schedule.module';
+import { SearchModule } from './web/search/search.module';
 import { UserModule } from './web/user/user.module';
 
 @Module({
@@ -26,6 +27,7 @@ import { UserModule } from './web/user/user.module';
     ScheduleModule,
     AirportModule,
     AirlineModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

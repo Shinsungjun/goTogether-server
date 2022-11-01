@@ -289,6 +289,16 @@ export const response = {
     code: 2056,
     message: '리뷰 아이디는 0보다 큰 값을 입력해주세요.',
   },
+  SEARCH_QUERY_EMPTY: {
+    isSuccess: false,
+    code: 2057,
+    message: '검색어를 입력해주세요.',
+  },
+  INVALID_SEARCH_QUERY: {
+    isSuccess: false,
+    code: 2058,
+    message: '검색어는 0자보다 큰 값을 입력해주세요.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,
