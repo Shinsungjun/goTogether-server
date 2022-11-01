@@ -90,8 +90,8 @@ export const GetSchedules = createParamDecorator(
       if (!GetSchedulesSort.includes(getSchedulesData.sort)) {
         throw new HttpException(response.INVALID_GET_SCHEDULES_SORT, 200);
       }
-      return getSchedulesData;
     }
+    return getSchedulesData;
   },
 );
 
