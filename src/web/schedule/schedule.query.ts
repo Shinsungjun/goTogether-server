@@ -135,7 +135,8 @@ export class ScheduleQuery {
   retrieveScheduleDepartureAirport = (scheduleId: number): string => {
     return `
       SELECT Schedule.departureAirportId as airportId,
-            Airport.name as airportName
+            Airport.name as airportName,
+            Airport.region
       FROM Schedule
               join Airport on Airport.id = Schedule.departureAirportId
       WHERE Schedule.id = ${scheduleId};
@@ -145,7 +146,8 @@ export class ScheduleQuery {
   retrieveScheduleArrivalAirport = (scheduleId: number): string => {
     return `
       SELECT Schedule.arrivalAirportId as airportId,
-            Airport.name as airportName
+            Airport.name as airportName,
+            Airport.region
       FROM Schedule
               join Airport on Airport.id = Schedule.arrivalAirportId
       WHERE Schedule.id = ${scheduleId};
@@ -154,7 +156,12 @@ export class ScheduleQuery {
 
   retrieveScheduleAirline = (scheduleId: number): string => {
     return `
-
+      SELECT Schedule.airlineId,
+            Airline.name                as airlineName,
+            Airline.logoImageUrl
+      FROM Schedule
+              join Airline on Airline.id = Schedule.airlineId
+      WHERE Schedule.id = ${scheduleId};
     `;
   };
 }

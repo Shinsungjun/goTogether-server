@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Airline } from 'src/entity/airline.entity';
+import { AirlineReview } from 'src/entity/airlineReview.entity';
 import { AirlineService } from 'src/entity/airlineService.entity';
 import { Airport } from 'src/entity/airport.entity';
+import { AirportReview } from 'src/entity/airportReview.entity';
 import { AirportService } from 'src/entity/airportSerivce.entity';
 import { Schedule } from 'src/entity/schedule.entity';
 import { ScheduleAirlineService } from 'src/entity/scheduleAirlineService.entity';
@@ -23,6 +25,8 @@ import { ScheduleService } from './schedule.service';
       ScheduleAirlineService,
       ScheduleAirportService,
       Schedule,
+      AirportReview,
+      AirlineReview,
     ]),
   ],
   controllers: [ScheduleController],

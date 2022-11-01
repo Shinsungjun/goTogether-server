@@ -12,6 +12,9 @@ export class AirportReview {
   airportId: number;
 
   @Column()
+  scheduleId: number;
+
+  @Column()
   content: string;
 
   @Column()

@@ -13,11 +13,14 @@ import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import {
   GetSchedule,
+  GetScheduleReviews,
   GetSchedules,
   PatchSchedule,
   PatchScheduleStatus,
   PostSchedule,
 } from '../decorators/schedule.decortor';
+import { GetScheduleReviewsRequest } from './dto/get-schedule-reviews.request';
+import { GetScheduleReviewsResponse } from './dto/get-schedule-reviews.response';
 import { GetScheduleRequest } from './dto/get-schedule.request';
 import { GetScheduleResponse } from './dto/get-schedule.response';
 import { GetSchedulesRequest } from './dto/get-schedules.request';
@@ -472,6 +475,66 @@ export class ScheduleController {
     return await this.scheduleService.editSchedule(
       userId,
       patchScheduleRequest,
+    );
+  }
+
+  /*
+    description: 일정 리뷰 조회 api
+    requires: GetScheduleReviewsRequest
+    returns: GetScheduleReviewsResponse
+  */
+  @ApiOperation({ summary: '일정 리뷰 조회 api' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: GetScheduleReviewsResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2046,
+    description: '일정 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2047,
+    description: '일정 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2048,
+    description: '존재하지 않는 일정입니다.',
+  })
+  @ApiResponse({
+    status: 2049,
+    description: '유저의 일정이 아닙니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @ApiParam({
+    name: 'scheduleId',
+    type: 'number',
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('/:scheduleId/reviews')
+  async getScheduleReviews(
+    @Req() req: any,
+    @GetScheduleReviews() getScheduleReviewsRequest: GetScheduleReviewsRequest,
+  ) {
+    const userId = req.user.userId;
+
+    return await this.scheduleService.retrieveScheduleReviews(
+      userId,
+      getScheduleReviewsRequest,
     );
   }
 }

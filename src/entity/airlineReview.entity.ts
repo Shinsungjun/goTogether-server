@@ -12,6 +12,9 @@ export class AirlineReview {
   airlineId: number;
 
   @Column()
+  scheduleId: number;
+
+  @Column()
   content: string;
 
   @Column()

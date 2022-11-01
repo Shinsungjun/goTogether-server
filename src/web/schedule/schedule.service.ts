@@ -9,6 +9,7 @@ import { Airline } from 'src/entity/airline.entity';
 import {
   AirportServiceType,
   GetSchedulesType,
+  ReviewStatus,
   Status,
 } from 'common/variable.utils';
 import { AirportService } from 'src/entity/airportSerivce.entity';
@@ -22,6 +23,9 @@ import { ScheduleQuery } from './schedule.query';
 import { PatchScheduleStatusRequest } from './dto/patch-schedule-status.request';
 import { GetScheduleRequest } from './dto/get-schedule.request';
 import { PatchScheduleRequest } from './dto/patch-schedule.request';
+import { GetScheduleReviewsRequest } from './dto/get-schedule-reviews.request';
+import { AirportReview } from 'src/entity/airportReview.entity';
+import { AirlineReview } from 'src/entity/airlineReview.entity';
 
 @Injectable()
 export class ScheduleService {
@@ -39,6 +43,10 @@ export class ScheduleService {
     private scheduleAirlineRepository: Repository<ScheduleAirlineService>,
     @InjectRepository(ScheduleAirportService)
     private scheduleAirportRepository: Repository<ScheduleAirportService>,
+    @InjectRepository(AirportReview)
+    private airportReviewRepository: Repository<AirportReview>,
+    @InjectRepository(AirlineReview)
+    private airlineReviewRepository: Repository<AirlineReview>,
     @InjectRepository(Schedule)
     private scheduleRepository: Repository<Schedule>,
 
@@ -465,6 +473,117 @@ export class ScheduleService {
       return result;
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async retrieveScheduleReviews(
+    userId: number,
+    getScheduleReviewsRequest: GetScheduleReviewsRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      // 존재하는 일정인지 확인
+      let schedule = await queryRunner.manager.findOneBy(Schedule, {
+        id: getScheduleReviewsRequest.scheduleId,
+        status: Status.ACTIVE,
+      });
+      if (!schedule) {
+        return response.NON_EXIST_SCHEDULE;
+      }
+
+      // 해당 user의 일정인지 확인
+      if (schedule.userId != userId) {
+        return response.SCHEDULE_USER_PERMISSION_DENIED;
+      }
+
+      let [departureAirport] = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleDepartureAirport(
+          getScheduleReviewsRequest.scheduleId,
+        ),
+      );
+      const departureAirportServices = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportService(
+          AirportServiceType.DEPARTURE,
+          getScheduleReviewsRequest.scheduleId,
+        ),
+      );
+      departureAirport['airportServices'] = departureAirportServices;
+      if (
+        await this.airportReviewRepository.findOneBy({
+          airportId: departureAirport.airportId,
+          scheduleId: getScheduleReviewsRequest.scheduleId,
+          userId: userId,
+          status: Status.ACTIVE,
+        })
+      ) {
+        departureAirport['reviewStatus'] = ReviewStatus.COMPLETED;
+      } else {
+        departureAirport['reviewStatus'] = ReviewStatus.BEFORE;
+      }
+
+      let [arrivalAirport] = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleArrivalAirport(
+          getScheduleReviewsRequest.scheduleId,
+        ),
+      );
+      const arrivalAirportServices = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportService(
+          AirportServiceType.ARRIVAL,
+          getScheduleReviewsRequest.scheduleId,
+        ),
+      );
+      arrivalAirport['airportServices'] = arrivalAirportServices;
+      if (
+        await this.airportReviewRepository.findOneBy({
+          airportId: arrivalAirport.airportId,
+          scheduleId: getScheduleReviewsRequest.scheduleId,
+          userId: userId,
+          status: Status.ACTIVE,
+        })
+      ) {
+        arrivalAirport['reviewStatus'] = ReviewStatus.COMPLETED;
+      } else {
+        arrivalAirport['reviewStatus'] = ReviewStatus.BEFORE;
+      }
+
+      let [airline] = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirline(
+          getScheduleReviewsRequest.scheduleId,
+        ),
+      );
+      const airlineServices = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirlineService(
+          getScheduleReviewsRequest.scheduleId,
+        ),
+      );
+      airline['airlineServices'] = airlineServices;
+      if (
+        await this.airlineReviewRepository.findOneBy({
+          airlineId: airline.airlineId,
+          scheduleId: getScheduleReviewsRequest.scheduleId,
+          userId: userId,
+          status: Status.ACTIVE,
+        })
+      ) {
+        airline['reviewStatus'] = ReviewStatus.COMPLETED;
+      } else {
+        airline['reviewStatus'] = ReviewStatus.BEFORE;
+      }
+
+      const data = {
+        departureAirport: departureAirport,
+        arrivalAirport: arrivalAirport,
+        airline: airline,
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
+
+      return result;
+    } catch (error) {
       return response.ERROR;
     } finally {
       await queryRunner.release();
