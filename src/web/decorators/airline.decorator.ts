@@ -89,3 +89,18 @@ export const PostAirlineReview = createParamDecorator(
     return postAirlineReviewData;
   },
 );
+
+export const PostAirlineReviewReport = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const postAirlineReviewReportData = ctx.switchToHttp().getRequest().params;
+
+    if (!postAirlineReviewReportData.reviewId) {
+      throw new HttpException(response.REVIEWID_EMPTY, 201);
+    }
+    if (postAirlineReviewReportData.reviewId <= 0) {
+      throw new HttpException(response.INVALID_REVIEWID, 201);
+    }
+
+    return postAirlineReviewReportData;
+  },
+);

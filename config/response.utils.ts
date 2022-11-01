@@ -279,6 +279,16 @@ export const response = {
     code: 2054,
     message: '공항의 서비스 아이디 리스트를 입력해주세요.',
   },
+  REVIEWID_EMPTY: {
+    isSuccess: false,
+    code: 2055,
+    message: '리뷰 아이디를 입력해주세요.',
+  },
+  INVALID_REVIEWID: {
+    isSuccess: false,
+    code: 2056,
+    message: '리뷰 아이디는 0보다 큰 값을 입력해주세요.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,

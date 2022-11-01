@@ -8,6 +8,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import {
@@ -23,6 +24,7 @@ import { GetAirlineServicesRequest } from './dto/get-airline-services.request';
 import { GetAirlineServicesResponse } from './dto/get-airline-services.response';
 import { GetAirlineRequest } from './dto/get-airline.request';
 import { GetAirlinesResponse } from './dto/get-airlines.response';
+import { PostAirlineReviewReportRequest } from './dto/post-airline-review-report.request';
 import { PostAirlineReviewRequest } from './dto/post-airline-review.request';
 import { PostAirlineResponse } from './dto/post-airline-review.response';
 
@@ -60,6 +62,59 @@ export class AirlineController {
   @Get()
   async getAirlines(@Req() req: any) {
     return this.airlineService.retrieveAirlines();
+  }
+
+  /*
+    description: 항공사 리뷰 신고 api
+    requires: PostAirlineReviewReportRequest
+    returns: PostAirlineReviewReportResponse
+  */
+  @ApiOperation({ summary: '항공사 리뷰 신고 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2055,
+    description: '리뷰 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2056,
+    description: '리뷰 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @ApiParam({
+    description: '리뷰 아이디',
+    name: 'reviewId',
+    type: 'number',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('/reviews/:reviewId/report')
+  async postReviewReport(
+    @Req() req: any,
+    @PostAirlineReview()
+    postAirlineReviewRequest: PostAirlineReviewReportRequest,
+  ) {
+    const userId = req.user.userId;
+
+    // return this.airlineService.createReviewReport(
+    //   userId,
+    //   postAirlineReviewRequest,
+    // );
   }
 
   /*
