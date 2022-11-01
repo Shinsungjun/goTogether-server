@@ -53,6 +53,13 @@ class Schedule {
   departureAirportName: string;
 
   @ApiProperty({
+    example: '김포',
+    description: '출발 공항 지역',
+  })
+  @IsString()
+  departureAirportRegion: string;
+
+  @ApiProperty({
     example: '033-670-7398',
     description: '출발 공항 고객센터 전화번호',
   })
@@ -88,6 +95,13 @@ class Schedule {
   arrivalAirportName: string;
 
   @ApiProperty({
+    example: '여수',
+    description: '도착 공항 지역',
+  })
+  @IsString()
+  arrivalAirportRegion: string;
+
+  @ApiProperty({
     example: '033-670-7398',
     description: '도착 공항 고객센터 전화번호',
   })
@@ -121,6 +135,14 @@ class Schedule {
   })
   @IsString()
   airlineName: string;
+
+  @ApiProperty({
+    example:
+      'https://blog.kakaocdn.net/dn/G1exv/btrNhgCiXez/3L04vyINyIhwH7RutKAHE1/img.png',
+    description: '항공사 로고 이미지 url',
+  })
+  @IsString()
+  logoImageUrl: string;
 
   @ApiProperty({
     example: '033-670-7398',
@@ -176,16 +198,20 @@ class GetScheduleResultData {
         leftDay: null,
         departureAirportId: 3,
         departureAirportName: '양양국제공항',
+        departureAirportRegion: '양양',
         departureAirportCustomerServiceNumber: '033-670-7398',
         departureAirportWebsite: 'https://www.airport.co.kr/yangyang/index.do',
         departureAirportAvgReview: '0.0',
         arrivalAirportId: 1,
         arrivalAirportName: '인천국제공항',
+        arrivalAirportRegion: '인천',
         arrivalAirportCustomerServiceNumber: '1577-2600',
         arrivalAirportWebsite: 'https://www.airport.kr/ap/ko/index.do',
         arrivalAirportAvgReview: '3.4',
         airlineId: 2,
         airlineName: '아시아나항공',
+        logoImageUrl:
+          'https://blog.kakaocdn.net/dn/G1exv/btrNhgCiXez/3L04vyINyIhwH7RutKAHE1/img.png',
         airlineCustomerServiceNumber: '02-2669-8000',
         airlineWebsite:
           'https://flyasiana.com/I/KR/KO/LowerPriceSearchList.do?menuId=CM201802220000728256&utm_source=google_pc&utm_medium=cpc&utm_campaign=brand_basic_creative&utm_content=&utm_term=&gclid=CjwKCAjw2OiaBhBSEiwAh2ZSP9kfDEwpfLolvaWOXB3COpR-kIrabK8y4SOYPEF7Fqc3sodGVW4fUhoCf0UQAvD_BwE',

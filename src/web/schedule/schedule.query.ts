@@ -67,16 +67,19 @@ export class ScheduleQuery {
                 end                                     as leftDay,
             Schedule.departureAirportId,
             departureAirport.name                       as departureAirportName,
+            departureAirport.region                     as departureAirportRegion,
             departureAirport.customerServiceNumber      as departureAirportCustomerServiceNumber,
             departureAirport.website                    as departureAirportWebsite,
             IFNULL(departureAirportReview.avgReview, 0) as departureAirportAvgReview,
             Schedule.arrivalAirportId,
             arrivalAirport.name                         as arrivalAirportName,
+            arrivalAirport.region                       as arrivalAirportRegion,
             arrivalAirport.customerServiceNumber        as arrivalAirportCustomerServiceNumber,
             arrivalAirport.website                      as arrivalAirportWebsite,
             IFNULL(arrivalAirportReview.avgReview, 0)   as arrivalAirportAvgReview,
             Schedule.airlineId,
             Airline.name                                as airlineName,
+            Airline.logoImageUrl,
             Airline.customerServiceNumber               as airlineCustomerServiceNumber,
             Airline.website                             as airlineWebsite,
             airlineReview.avgReview                     as airlineAvgReview
@@ -108,7 +111,8 @@ export class ScheduleQuery {
     scheduleId: number,
   ): string => {
     return `
-      SELECT AirportService.name
+      SELECT AirportService.id as airportServiceId,
+            AirportService.name
       FROM ScheduleAirportService
               join AirportService on AirportService.id = ScheduleAirportService.airportServiceId
       WHERE ScheduleAirportService.scheduleId = ${scheduleId}
@@ -119,11 +123,38 @@ export class ScheduleQuery {
 
   retrieveScheduleAirlineService = (scheduleId: number): string => {
     return `
-        SELECT AirlineService.name
+        SELECT AirlineService.id as airlineServiceId, 
+              AirlineService.name
         FROM ScheduleAirlineService
                 join AirlineService on AirlineService.id = ScheduleAirlineService.airlineServiceId
         WHERE ScheduleAirlineService.scheduleId = ${scheduleId}
           and ScheduleAirlineService.status = 'ACTIVE';
       `;
+  };
+
+  retrieveScheduleDepartureAirport = (scheduleId: number): string => {
+    return `
+      SELECT Schedule.departureAirportId as airportId,
+            Airport.name as airportName
+      FROM Schedule
+              join Airport on Airport.id = Schedule.departureAirportId
+      WHERE Schedule.id = ${scheduleId};
+    `;
+  };
+
+  retrieveScheduleArrivalAirport = (scheduleId: number): string => {
+    return `
+      SELECT Schedule.arrivalAirportId as airportId,
+            Airport.name as airportName
+      FROM Schedule
+              join Airport on Airport.id = Schedule.arrivalAirportId
+      WHERE Schedule.id = ${scheduleId};
+    `;
+  };
+
+  retrieveScheduleAirline = (scheduleId: number): string => {
+    return `
+
+    `;
   };
 }
