@@ -85,6 +85,12 @@ export const PostAirlineReview = createParamDecorator(
     if (postAirlineReviewData.score > 5 || postAirlineReviewData.score < 0) {
       throw new HttpException(response.INVALID_REVIEW_SCORE, 201);
     }
+    if (
+      postAirlineReviewData.scheduleId &&
+      postAirlineReviewData.scheduleId <= 0
+    ) {
+      throw new HttpException(response.INVALID_SCHEDULE_ID, 201);
+    }
 
     return postAirlineReviewData;
   },

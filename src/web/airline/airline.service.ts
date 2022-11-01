@@ -14,6 +14,7 @@ import { PostAirlineReviewRequest } from './dto/post-airline-review.request';
 import { AuthService } from '../auth/auth.service';
 import { AirlineReview } from 'src/entity/airlineReview.entity';
 import { ReviewAirlineService } from 'src/entity/reviewAirlineService.entity';
+import { Schedule } from 'src/entity/schedule.entity';
 
 @Injectable()
 export class AirlineService {
@@ -228,6 +229,23 @@ export class AirlineService {
       airlineReviewRegister.airlineId = postAirlineReviewRequest.airlineId;
       airlineReviewRegister.content = postAirlineReviewRequest.content;
       airlineReviewRegister.score = postAirlineReviewRequest.score;
+      // 존재하는 일정인지 확인
+      if (postAirlineReviewRequest.scheduleId) {
+        let schedule = await queryRunner.manager.findOneBy(Schedule, {
+          id: postAirlineReviewRequest.scheduleId,
+          status: Status.ACTIVE,
+        });
+        if (!schedule) {
+          return response.NON_EXIST_SCHEDULE;
+        }
+
+        // 해당 user의 일정인지 확인
+        if (schedule.userId != postAirlineReviewRequest.userId) {
+          return response.SCHEDULE_USER_PERMISSION_DENIED;
+        }
+
+        airlineReviewRegister.scheduleId = postAirlineReviewRequest.scheduleId;
+      }
 
       const createdAirlineReview = await queryRunner.manager.save(
         airlineReviewRegister,
