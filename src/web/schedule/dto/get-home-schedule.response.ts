@@ -25,13 +25,6 @@ class HomeSchedule {
   startAt: string;
 
   @ApiProperty({
-    example: '2022.10.14',
-    description: '종료 날짜',
-  })
-  @IsString()
-  endAt: string;
-
-  @ApiProperty({
     example: 'D-2',
     description: '디데이 (지난 일정이면 null)',
   })
@@ -109,7 +102,6 @@ class GetHomeScheduleResultData {
         scheduleId: 6,
         scheduleName: '제주도 여행',
         startAt: '2022.10.30',
-        endAt: '2022.11.24',
         leftDay: 'D-1',
         departureAirportId: 3,
         departureAirportName: '양양국제공항',

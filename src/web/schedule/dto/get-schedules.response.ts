@@ -25,13 +25,6 @@ class ScheduleInfo {
   startAt: string;
 
   @ApiProperty({
-    example: '2022.10.14',
-    description: '종료 날짜',
-  })
-  @IsString()
-  endAt: string;
-
-  @ApiProperty({
     example: 'D-2',
     description: '디데이 (등록된 일정에서만 나옴)',
     required: false,
@@ -97,7 +90,6 @@ class GetSchedulesResultData {
         scheduleId: 1,
         scheduleName: '제주도 여행',
         startAt: '2022.02.03',
-        endAt: '2022.02.04',
         leftDay: 'D-2',
         departureAirportId: 1,
         departureAirportName: '인천국제공항',
@@ -110,7 +102,6 @@ class GetSchedulesResultData {
         scheduleId: 2,
         scheduleName: '여수 여행',
         startAt: '2022.03.04',
-        endAt: '2022.05.03',
         leftDay: 'D-3',
         departureAirportId: 1,
         departureAirportName: '인천국제공항',
