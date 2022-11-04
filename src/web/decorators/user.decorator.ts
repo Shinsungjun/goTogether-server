@@ -41,3 +41,24 @@ export const PostUser = createParamDecorator(
     return postUserData;
   },
 );
+
+export const PatchUser = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const patchUserData = ctx.switchToHttp().getRequest().body;
+
+    if (!patchUserData.userId) {
+      throw new HttpException(response.USERID_EMPTY, 201);
+    }
+    if (patchUserData.userId <= 0) {
+      throw new HttpException(response.INVALID_USERID, 201);
+    }
+    if (!patchUserData.nickName) {
+      throw new HttpException(response.USER_NICKNAME_EMPTY, 201);
+    }
+    if (!regularExp.nickNameRegex.test(patchUserData.nickName)) {
+      throw new HttpException(response.INVALID_USER_NICKNAME, 201);
+    }
+
+    return patchUserData;
+  },
+);

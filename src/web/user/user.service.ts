@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { makeResponse } from 'common/function.utils';
 import { Payload } from '../auth/jwt/jwt.payload';
+import { PatchUserRequest } from './dto/patch-user.request';
 
 @Injectable()
 export class UserService {
@@ -74,6 +75,33 @@ export class UserService {
       };
 
       const result = makeResponse(response.SUCCESS, data);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    }
+  }
+
+  async editUser(patchUserRequest: PatchUserRequest) {
+    try {
+      let user = await this.userRepository.findOneBy({
+        id: patchUserRequest.userId,
+        status: Status.ACTIVE,
+      });
+      if (!user) {
+        return response.NON_EXIST_USER;
+      }
+
+      await this.userRepository.update(
+        {
+          id: patchUserRequest.userId,
+        },
+        {
+          nickName: patchUserRequest.nickName,
+        },
+      );
+
+      const result = makeResponse(response.SUCCESS, undefined);
 
       return result;
     } catch (error) {
