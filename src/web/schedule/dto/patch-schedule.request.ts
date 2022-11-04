@@ -17,13 +17,6 @@ export class PatchScheduleRequest {
   startAt: string;
 
   @ApiProperty({
-    example: '2022-10-24 20:00',
-    description: '도착 날짜, 시간',
-  })
-  @IsString()
-  endAt: string;
-
-  @ApiProperty({
     example: 1,
     description: '출발 공항 아이디',
   })

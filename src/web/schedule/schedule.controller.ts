@@ -413,10 +413,6 @@ export class ScheduleController {
     description: '날짜는 YYYY-MM-DD HH:MM 형식으로 입력해주세요.',
   })
   @ApiResponse({
-    status: 2022,
-    description: '도착 날짜를 입력해주세요.',
-  })
-  @ApiResponse({
     status: 2025,
     description: '출발 공항의 아이디를 입력해주세요.',
   })

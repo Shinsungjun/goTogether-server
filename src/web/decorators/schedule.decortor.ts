@@ -135,12 +135,6 @@ export const PatchSchedule = createParamDecorator(
     if (!regularExp.dateRegex.test(patchScheduleData.startAt)) {
       throw new HttpException(response.INVALID_DATE_FORMAT, 201);
     }
-    if (!patchScheduleData.endAt) {
-      throw new HttpException(response.END_AT_EMPTY, 201);
-    }
-    if (!regularExp.dateRegex.test(patchScheduleData.endAt)) {
-      throw new HttpException(response.INVALID_DATE_FORMAT, 201);
-    }
     if (!patchScheduleData.departureAirportId) {
       throw new HttpException(response.DEPARTURE_AIRPORT_ID_EMPTY, 201);
     }

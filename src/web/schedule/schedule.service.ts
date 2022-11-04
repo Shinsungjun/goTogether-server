@@ -427,7 +427,6 @@ export class ScheduleService {
         { id: patchScheduleRequest.scheduleId },
         {
           startAt: patchScheduleRequest.startAt,
-          // endAt: patchScheduleRequest.endAt,
           departureAirportId: patchScheduleRequest.departureAirportId,
           arrivalAirportId: patchScheduleRequest.arrivalAirportId,
           airlineId: patchScheduleRequest.airlineId,
