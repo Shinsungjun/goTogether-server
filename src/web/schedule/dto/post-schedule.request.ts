@@ -17,13 +17,6 @@ export class PostScheduleRequest {
   startAt: string;
 
   @ApiProperty({
-    example: '2022-10-24 20:00',
-    description: '도착 날짜, 시간',
-  })
-  @IsString()
-  endAt: string;
-
-  @ApiProperty({
     example: '제주도 여행',
     description: '여행 이름',
   })

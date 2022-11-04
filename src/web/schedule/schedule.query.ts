@@ -59,7 +59,6 @@ export class ScheduleQuery {
       SELECT Schedule.id                                 as scheduleId,
             Schedule.name                               as scheduleName,
             DATE_FORMAT(Schedule.startAt, '%Y.%m.%d')   as startAt,
-            DATE_FORMAT(Schedule.endAt, '%Y.%m.%d')     as endAt,
             case
                 when TIMESTAMPDIFF(DAY, now(), Schedule.startAt) = 0 then 'D-DAY'
                 when TIMESTAMPDIFF(DAY, now(), Schedule.startAt) < 0 then null

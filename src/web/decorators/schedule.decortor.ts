@@ -23,12 +23,6 @@ export const PostSchedule = createParamDecorator(
     if (!regularExp.dateRegex.test(postScheduleData.startAt)) {
       throw new HttpException(response.INVALID_DATE_FORMAT, 201);
     }
-    if (!postScheduleData.endAt) {
-      throw new HttpException(response.END_AT_EMPTY, 201);
-    }
-    if (!regularExp.dateRegex.test(postScheduleData.endAt)) {
-      throw new HttpException(response.INVALID_DATE_FORMAT, 201);
-    }
     if (!postScheduleData.name) {
       throw new HttpException(response.SCHEDULE_NAME_EMPTY, 201);
     }

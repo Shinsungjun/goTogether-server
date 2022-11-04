@@ -64,26 +64,24 @@ export class ScheduleService {
       }
 
       // 존재하는 공항인지 확인
-      if (
-        !(await this.airportRepository.findOneBy({
-          id: postScheduleRequest.departureAirportId,
-          status: Status.ACTIVE,
-        })) ||
-        !(await this.airportRepository.findOneBy({
-          id: postScheduleRequest.arrivalAirportId,
-          status: Status.ACTIVE,
-        }))
-      ) {
+      const departureAirport = await this.airportRepository.findOneBy({
+        id: postScheduleRequest.departureAirportId,
+        status: Status.ACTIVE,
+      });
+      const arrivalAirport = await this.airportRepository.findOneBy({
+        id: postScheduleRequest.arrivalAirportId,
+        status: Status.ACTIVE,
+      });
+      if (!departureAirport || !arrivalAirport) {
         return response.NON_EXIST_AIRPORT;
       }
 
       // 존재하는 항공사인지 확인
-      if (
-        !(await this.airlineRepository.findOneBy({
-          id: postScheduleRequest.airlineId,
-          status: Status.ACTIVE,
-        }))
-      ) {
+      const airline = await this.airlineRepository.findOneBy({
+        id: postScheduleRequest.airlineId,
+        status: Status.ACTIVE,
+      });
+      if (!airline) {
         return response.NON_EXIST_AIRLINE;
       }
 
@@ -92,7 +90,6 @@ export class ScheduleService {
       scheduleRegister.name = postScheduleRequest.name;
       scheduleRegister.userId = postScheduleRequest.userId;
       scheduleRegister.startAt = postScheduleRequest.startAt;
-      scheduleRegister.endAt = postScheduleRequest.endAt;
       scheduleRegister.departureAirportId =
         postScheduleRequest.departureAirportId;
       scheduleRegister.arrivalAirportId = postScheduleRequest.arrivalAirportId;
@@ -161,9 +158,50 @@ export class ScheduleService {
         await queryRunner.manager.save(scheduleAirlineServiceRegister);
       }
 
-      const data = {
+      let departureAirportService = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportService(
+          AirportServiceType.DEPARTURE,
+          createdSchedule.id,
+        ),
+      );
+      departureAirportService = departureAirportService.map((x) => x.name);
+
+      let arrivalAirportService = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportService(
+          AirportServiceType.ARRIVAL,
+          createdSchedule.id,
+        ),
+      );
+      arrivalAirportService = arrivalAirportService.map((x) => x.name);
+
+      let airlineService = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirlineService(createdSchedule.id),
+      );
+      airlineService = airlineService.map((x) => x.name);
+
+      const scheduleStartAt = new Date(postScheduleRequest.startAt);
+
+      const createdScheduleInfo = {
         scheduleId: createdSchedule.id,
+        scheduleName: postScheduleRequest.name,
+        startAt:
+          postScheduleRequest.startAt.slice(2, 4) +
+          '.' +
+          postScheduleRequest.startAt.slice(5, 7) +
+          '.' +
+          postScheduleRequest.startAt.slice(8, 10),
+        departureAirportName: departureAirport.name,
+        arrivalAiportName: arrivalAirport.name,
+        airlineName: airline.name,
+        departureAirportService: departureAirportService,
+        arrivalAirportService: arrivalAirportService,
+        airlineService: airlineService,
       };
+
+      const data = {
+        createdSchedule: createdScheduleInfo,
+      };
+
       const result = makeResponse(response.SUCCESS, data);
 
       await queryRunner.commitTransaction();
@@ -389,7 +427,7 @@ export class ScheduleService {
         { id: patchScheduleRequest.scheduleId },
         {
           startAt: patchScheduleRequest.startAt,
-          endAt: patchScheduleRequest.endAt,
+          // endAt: patchScheduleRequest.endAt,
           departureAirportId: patchScheduleRequest.departureAirportId,
           arrivalAirportId: patchScheduleRequest.arrivalAirportId,
           airlineId: patchScheduleRequest.airlineId,

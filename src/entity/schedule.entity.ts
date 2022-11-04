@@ -15,9 +15,6 @@ export class Schedule {
   startAt: string;
 
   @Column()
-  endAt: string;
-
-  @Column()
   departureAirportId: number;
 
   @Column()
