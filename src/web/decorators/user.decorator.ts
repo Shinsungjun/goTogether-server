@@ -62,3 +62,18 @@ export const PatchUser = createParamDecorator(
     return patchUserData;
   },
 );
+
+export const PatchUserStatus = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const patchUserStatusData = ctx.switchToHttp().getRequest().body;
+
+    if (!patchUserStatusData.userId) {
+      throw new HttpException(response.USERID_EMPTY, 201);
+    }
+    if (patchUserStatusData.userId <= 0) {
+      throw new HttpException(response.INVALID_USERID, 201);
+    }
+
+    return patchUserStatusData;
+  },
+);

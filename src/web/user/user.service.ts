@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { makeResponse } from 'common/function.utils';
 import { Payload } from '../auth/jwt/jwt.payload';
 import { PatchUserRequest } from './dto/patch-user.request';
+import { PatchUserStatusRequest } from './dto/patch-user-status.request';
 
 @Injectable()
 export class UserService {
@@ -98,6 +99,33 @@ export class UserService {
         },
         {
           nickName: patchUserRequest.nickName,
+        },
+      );
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    }
+  }
+
+  async deleteUser(patchUserStatusRequest: PatchUserStatusRequest) {
+    try {
+      let user = await this.userRepository.findOneBy({
+        id: patchUserStatusRequest.userId,
+        status: Status.ACTIVE,
+      });
+      if (!user) {
+        return response.NON_EXIST_USER;
+      }
+
+      await this.userRepository.update(
+        {
+          id: patchUserStatusRequest.userId,
+        },
+        {
+          status: Status.DELETED,
         },
       );
 

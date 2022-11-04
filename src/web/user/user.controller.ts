@@ -9,7 +9,12 @@ import {
 import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
-import { PatchUser, PostUser } from '../decorators/user.decorator';
+import {
+  PatchUser,
+  PatchUserStatus,
+  PostUser,
+} from '../decorators/user.decorator';
+import { PatchUserStatusRequest } from './dto/patch-user-status.request';
 import { PatchUserRequest } from './dto/patch-user.request';
 import { PostUserRequest } from './dto/post-user.request';
 import { PostUserResponse } from './dto/post-user.response';
@@ -145,5 +150,60 @@ export class UserController {
     }
 
     return await this.userService.editUser(patchUserRequest);
+  }
+
+  /*
+    description: 회원 탈퇴 api
+    requires: PatchUserStatusRequest
+    returns: BaseResponse
+  */
+  @ApiOperation({ summary: '회원 탈퇴 api' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2014,
+    description: '존재하지 않는 유저입니다.',
+  })
+  @ApiResponse({
+    status: 2017,
+    description: '유저 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2018,
+    description: '유저 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2033,
+    description: '유저 아이디를 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiBody({
+    description: '회원 탈퇴 DTO',
+    type: PatchUserStatusRequest,
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Patch('/status')
+  async patchUserStatus(
+    @Req() req: any,
+    @PatchUserStatus() patchUserStatusRequest: PatchUserStatusRequest,
+  ) {
+    const userIdJwt = req.user.userId;
+    if (userIdJwt != patchUserStatusRequest.userId) {
+      return response.USER_ERROR_TYPE;
+    }
+
+    return await this.userService.deleteUser(patchUserStatusRequest);
   }
 }
