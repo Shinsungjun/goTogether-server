@@ -164,4 +164,31 @@ export class ScheduleQuery {
       WHERE Schedule.id = ${scheduleId};
     `;
   };
+
+  retrieveHomeSchedule = (userId: number): string => {
+    return `
+      SELECT Schedule.id                                                   as scheduleId,
+            Schedule.name                                                 as scheduleName,
+            DATE_FORMAT(Schedule.startAt, '%Y.%m.%d')                     as startAt,
+            DATE_FORMAT(Schedule.endAt, '%Y.%m.%d')                       as endAt,
+            IF(TIMESTAMPDIFF(DAY, now(), Schedule.startAt) = 0, 'D-DAY',
+                CONCAT('D-', TIMESTAMPDIFF(DAY, now(), Schedule.startAt))) as leftDay,
+            Schedule.departureAirportId,
+            departureAirport.name                                         as departureAirportName,
+            Schedule.arrivalAirportId,
+            arrivalAirport.name                                           as arrivalAirportName,
+            Schedule.airlineId,
+            Airline.name                                                  as airlineName
+      FROM Schedule
+              join Airport as departureAirport on departureAirport.id = Schedule.departureAirportId
+              join Airport as arrivalAirport on arrivalAirport.id = Schedule.arrivalAirportId
+              join Airline on Airline.id = Schedule.airlineId
+      WHERE TIMESTAMPDIFF(DAY, now(), Schedule.startAt) <= 3
+        and TIMESTAMPDIFF(DAY, now(), Schedule.startAt) >= 0
+        and Schedule.userId = ${userId}
+        and Schedule.status = 'ACTIVE'
+      order by Schedule.startAt
+      LIMIT 1;
+    `;
+  };
 }

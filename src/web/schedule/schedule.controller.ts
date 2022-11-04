@@ -19,6 +19,7 @@ import {
   PatchScheduleStatus,
   PostSchedule,
 } from '../decorators/schedule.decortor';
+import { GetHomeScheduleResponse } from './dto/get-home-schedule.response';
 import { GetScheduleReviewsRequest } from './dto/get-schedule-reviews.request';
 import { GetScheduleReviewsResponse } from './dto/get-schedule-reviews.response';
 import { GetScheduleRequest } from './dto/get-schedule.request';
@@ -306,6 +307,39 @@ export class ScheduleController {
       userId,
       patchScheduleStatusRequest,
     );
+  }
+
+  /*
+    description: 홈화면 일정 조회 api
+    requires: GetHomeScheduleRequest
+    returns: GetHomeScheduleResponse
+  */
+  @ApiOperation({ summary: '홈화면 일정 조회 api' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: GetHomeScheduleResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('/home')
+  async getHomeSchedule(@Req() req: any) {
+    const userId = req.user.userId;
+
+    return await this.scheduleService.retrieveHomeSchedule(userId);
   }
 
   /*

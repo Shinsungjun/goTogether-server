@@ -589,4 +589,55 @@ export class ScheduleService {
       await queryRunner.release();
     }
   }
+
+  async retrieveHomeSchedule(userId: number) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      let [homeSchedule] = await queryRunner.query(
+        this.scheduleQuery.retrieveHomeSchedule(userId),
+      );
+
+      if (homeSchedule) {
+        // 출발 공항의 선택된 서비스 조회
+        const departureAirportService = await queryRunner.query(
+          this.scheduleQuery.retrieveScheduleAirportService(
+            AirportServiceType.DEPARTURE,
+            homeSchedule.scheduleId,
+          ),
+        );
+        homeSchedule['departureAirportService'] = departureAirportService.map(
+          (x) => x.name,
+        );
+
+        const arrivalAirportService = await queryRunner.query(
+          this.scheduleQuery.retrieveScheduleAirportService(
+            AirportServiceType.ARRIVAL,
+            homeSchedule.scheduleId,
+          ),
+        );
+        homeSchedule['arrivalAirportService'] = arrivalAirportService.map(
+          (x) => x.name,
+        );
+
+        const airlineService = await queryRunner.query(
+          this.scheduleQuery.retrieveScheduleAirlineService(
+            homeSchedule.scheduleId,
+          ),
+        );
+        homeSchedule['airlineService'] = airlineService.map((x) => x.name);
+      }
+
+      const data = {
+        schedule: homeSchedule,
+      };
+      const result = makeResponse(response.SUCCESS, data);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }
