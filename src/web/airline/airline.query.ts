@@ -66,7 +66,7 @@ export class AirlineQuery {
     `;
   };
 
-  retrieveAirlineReviewedServices = (airlineReviewId: number): string => {
+  retrieveAirlineReviewedServicesQuery = (airlineReviewId: number): string => {
     return `
       SELECT AirlineService.name
       FROM ReviewAirlineService
@@ -74,6 +74,16 @@ export class AirlineQuery {
               join AirlineService on AirlineService.id = ReviewAirlineService.airlineServiceId
       WHERE AirlineReview.id = ${airlineReviewId}
       group by AirlineService.name;
+    `;
+  };
+
+  retrieveAirlineReviewTimeQuery = (airlineReviewId: number): string => {
+    return `
+      SELECT AirlineReview.id
+      FROM AirlineReview
+      WHERE AirlineReview.id = ${airlineReviewId}
+        and TIMESTAMPDIFF(hour, AirlineReview.createdAt, NOW()) < 48
+        and TIMESTAMPDIFF(hour, AirlineReview.createdAt, NOW()) >= 0
     `;
   };
 }

@@ -299,6 +299,26 @@ export const response = {
     code: 2058,
     message: '검색어는 0자보다 큰 값을 입력해주세요.',
   },
+  NON_EXIST_AIRLINE_REVIEW: {
+    isSuccess: false,
+    code: 2059,
+    message: '존재하지 않는 항공사 리뷰입니다.',
+  },
+  NON_EXIST_AIRPORT_REVIEW: {
+    isSuccess: false,
+    code: 2060,
+    message: '존재하지 않는 공항 리뷰입니다.',
+  },
+  REVIEW_TIME_ERROR: {
+    isSuccess: false,
+    code: 2061,
+    message: '작성 시간이 48시간이 넘었습니다.',
+  },
+  REVIEW_USER_PERMISSION_DENIED: {
+    isSuccess: false,
+    code: 2062,
+    message: '유저가 작성한 리뷰가 아닙니다.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,

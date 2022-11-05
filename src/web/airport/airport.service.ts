@@ -186,7 +186,7 @@ export class AirportService {
 
       for (let airportReview of airportReviews) {
         const airportReviewedServices = await queryRunner.query(
-          this.airportQuery.retrieveAirportReviewedServices(
+          this.airportQuery.retrieveAirportReviewedServicesQuery(
             airportReview.airportReviewId,
           ),
         );

@@ -64,7 +64,7 @@ export class AirportQuery {
     `;
   };
 
-  retrieveAirportReviewedServices = (airportReviewId: number): string => {
+  retrieveAirportReviewedServicesQuery = (airportReviewId: number): string => {
     return `
       SELECT AirportService.name
       FROM ReviewAirportService

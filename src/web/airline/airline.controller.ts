@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeader,
@@ -15,6 +15,7 @@ import {
   GetAirline,
   GetAirlineReviews,
   GetAirlineServices,
+  PatchAirlineReview,
   PostAirlineReview,
 } from '../decorators/airline.decorator';
 import { AirlineService } from './airline.service';
@@ -24,6 +25,7 @@ import { GetAirlineServicesRequest } from './dto/get-airline-services.request';
 import { GetAirlineServicesResponse } from './dto/get-airline-services.response';
 import { GetAirlineRequest } from './dto/get-airline.request';
 import { GetAirlinesResponse } from './dto/get-airlines.response';
+import { PatchAirlineReviewRequest } from './dto/patch-airline-review.request';
 import { PostAirlineReviewReportRequest } from './dto/post-airline-review-report.request';
 import { PostAirlineReviewRequest } from './dto/post-airline-review.request';
 import { PostAirlineResponse } from './dto/post-airline-review.response';
@@ -377,6 +379,77 @@ export class AirlineController {
 
     return await this.airlineService.createAirlineReview(
       postAirlineReviewRequest,
+    );
+  }
+
+  /*
+    description: 항공사 리뷰 수정 api
+    requires: PatchAirlineReviewRequest
+    returns: BaseResponse
+  */
+  @ApiOperation({ summary: '항공사 리뷰 수정 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2050,
+    description: '리뷰의 내용을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2051,
+    description: '리뷰의 내용은 200자 이내로 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2055,
+    description: '리뷰 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2056,
+    description: '리뷰 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2059,
+    description: '존재하지 않는 항공사 리뷰입니다.',
+  })
+  @ApiResponse({
+    status: 2061,
+    description: '작성 시간이 48시간이 넘었습니다.',
+  })
+  @ApiResponse({
+    status: 2062,
+    description: '유저가 작성한 리뷰가 아닙니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiBody({
+    description: '항공사 리뷰 수정 DTO',
+    type: PatchAirlineReviewRequest,
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Patch('/reviews/:airlineReviewId')
+  async patchAirlineReview(
+    @Req() req: any,
+    @PatchAirlineReview() patchAirlineReviewRequest: PatchAirlineReviewRequest,
+  ) {
+    const userId = req.user.userId;
+
+    return await this.airlineService.editAirlineReview(
+      userId,
+      patchAirlineReviewRequest,
     );
   }
 }

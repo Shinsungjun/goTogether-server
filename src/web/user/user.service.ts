@@ -182,7 +182,9 @@ export class UserService {
       );
       for (let airportReview of airportReviews) {
         const airportReviewedServices = await queryRunner.query(
-          this.airportQuery.retrieveAirportReviewedServices(airportReview.id),
+          this.airportQuery.retrieveAirportReviewedServicesQuery(
+            airportReview.id,
+          ),
         );
         airportReview['reviewedAirportServices'] = airportReviewedServices.map(
           (x) => x.name,
@@ -197,7 +199,9 @@ export class UserService {
       );
       for (let airlineReview of airlineReviews) {
         const airlineReviewedServices = await queryRunner.query(
-          this.airlineQuery.retrieveAirlineReviewedServices(airlineReview.id),
+          this.airlineQuery.retrieveAirlineReviewedServicesQuery(
+            airlineReview.id,
+          ),
         );
         airlineReview['reviewedAirlineServices'] = airlineReviewedServices.map(
           (x) => x.name,

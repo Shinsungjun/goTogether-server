@@ -15,6 +15,7 @@ import { AuthService } from '../auth/auth.service';
 import { AirlineReview } from 'src/entity/airlineReview.entity';
 import { ReviewAirlineService } from 'src/entity/reviewAirlineService.entity';
 import { Schedule } from 'src/entity/schedule.entity';
+import { PatchAirlineReviewRequest } from './dto/patch-airline-review.request';
 
 @Injectable()
 export class AirlineService {
@@ -175,7 +176,7 @@ export class AirlineService {
 
       for (let airlineReview of airlineReviews) {
         const airlineReviewedServices = await queryRunner.query(
-          this.airlineQuery.retrieveAirlineReviewedServices(
+          this.airlineQuery.retrieveAirlineReviewedServicesQuery(
             airlineReview.airlineReviewId,
           ),
         );
@@ -281,6 +282,56 @@ export class AirlineService {
       return result;
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async editAirlineReview(
+    userId: number,
+    patchAirlineReviewRequest: PatchAirlineReviewRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      // 존재하는 리뷰인지 확인
+      const airlineReview = await this.airlineReviewRepository.findOneBy({
+        id: patchAirlineReviewRequest.airlineReviewId,
+        status: Status.ACTIVE,
+      });
+      if (!airlineReview) {
+        return response.NON_EXIST_AIRLINE_REVIEW;
+      }
+
+      // 본인의 리뷰인지 확인
+      if (airlineReview.userId != userId) {
+        return response.REVIEW_USER_PERMISSION_DENIED;
+      }
+
+      // 작성한지 48시간 이내인지 확인
+      const [reviewTime] = await queryRunner.query(
+        this.airlineQuery.retrieveAirlineReviewTimeQuery(
+          patchAirlineReviewRequest.airlineReviewId,
+        ),
+      );
+      if (!reviewTime) {
+        return response.REVIEW_TIME_ERROR;
+      }
+
+      await this.airlineReviewRepository.update(
+        {
+          id: patchAirlineReviewRequest.airlineReviewId,
+        },
+        {
+          content: patchAirlineReviewRequest.content,
+        },
+      );
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
+    } catch (error) {
       return response.ERROR;
     } finally {
       await queryRunner.release();
