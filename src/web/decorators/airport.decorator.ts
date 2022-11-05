@@ -95,3 +95,24 @@ export const PostAirportReview = createParamDecorator(
     return postAirportReviewData;
   },
 );
+
+export const PatchAirportReview = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const patchAirportReviewData = ctx.switchToHttp().getRequest().body;
+
+    if (!patchAirportReviewData.airlineReviewId) {
+      throw new HttpException(response.REVIEWID_EMPTY, 200);
+    }
+    if (patchAirportReviewData.airlineReviewId <= 0) {
+      throw new HttpException(response.INVALID_REVIEWID, 200);
+    }
+    if (!patchAirportReviewData.content) {
+      throw new HttpException(response.REVIEW_CONTENT_EMPTY, 201);
+    }
+    if (patchAirportReviewData.content.length > 200) {
+      throw new HttpException(response.INVALID_REVIEW_CONTENT, 201);
+    }
+
+    return patchAirportReviewData;
+  },
+);

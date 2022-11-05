@@ -74,4 +74,13 @@ export class AirportQuery {
       group by AirportService.name;
     `;
   };
+  retrieveAirportReviewTimeQuery = (airportReviewId: number): string => {
+    return `
+      SELECT AirportReview.id
+      FROM AirportReview
+      WHERE AirportReview.id = ${airportReviewId}
+        and TIMESTAMPDIFF(hour, AirportReview.createdAt, NOW()) < 48
+        and TIMESTAMPDIFF(hour, AirportReview.createdAt, NOW()) >= 0;
+    `;
+  };
 }

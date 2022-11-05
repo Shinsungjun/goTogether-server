@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeader,
@@ -8,12 +8,14 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import {
   GetAirport,
   GetAirportReviews,
   GetAirportServices,
+  PatchAirportReview,
   PostAirportReview,
 } from '../decorators/airport.decorator';
 import { AirportService } from './airport.service';
@@ -24,6 +26,7 @@ import { GetAirportServicesResponse } from './dto/get-airport-services.response'
 import { GetAirportRequest } from './dto/get-airport.request';
 import { GetAirportResponse } from './dto/get-airport.response';
 import { GetAirportsResponse } from './dto/get-airports.response';
+import { PatchAirportReviewRequest } from './dto/patch-airport-review.request';
 import { PostAirportReviewRequest } from './dto/post-airport-review.request';
 import { PostAirportResponse } from './dto/post-airport-review.response';
 
@@ -336,6 +339,77 @@ export class AirportController {
 
     return await this.airportService.createAirportReview(
       postAirportReviewRequest,
+    );
+  }
+
+  /*
+    description: 공항 리뷰 수정 api
+    requires: PatchAirportReviewRequest
+    returns: BaseResponse
+  */
+  @ApiOperation({ summary: '공항 리뷰 수정 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2050,
+    description: '리뷰의 내용을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2051,
+    description: '리뷰의 내용은 200자 이내로 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2055,
+    description: '리뷰 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2056,
+    description: '리뷰 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2060,
+    description: '존재하지 않는 공항 리뷰입니다.',
+  })
+  @ApiResponse({
+    status: 2061,
+    description: '작성 시간이 48시간이 넘었습니다.',
+  })
+  @ApiResponse({
+    status: 2062,
+    description: '유저가 작성한 리뷰가 아닙니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiBody({
+    description: '공항 리뷰 수정 DTO',
+    type: PatchAirportReviewRequest,
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Patch('/reviews/:airportReviewId')
+  async patchAirlineReview(
+    @Req() req: any,
+    @PatchAirportReview() patchAirportReviewRequest: PatchAirportReviewRequest,
+  ) {
+    const userId = req.user.userId;
+
+    return await this.airportService.editAirportReview(
+      userId,
+      patchAirportReviewRequest,
     );
   }
 }
