@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Status } from 'common/variable.utils';
 import { response } from 'config/response.utils';
 import { User } from 'src/entity/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { PostUserRequest } from './dto/post-user.request';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -12,6 +12,10 @@ import { Payload } from '../auth/jwt/jwt.payload';
 import { PatchUserRequest } from './dto/patch-user.request';
 import { PatchUserStatusRequest } from './dto/patch-user-status.request';
 import { GetUserRequest } from './dto/get-user.request';
+import { GetUserReviewsRequest } from './dto/get-user-reviews.request';
+import { UserQuery } from './user.query';
+import { AirlineQuery } from '../airline/airline.query';
+import { AirportQuery } from '../airport/airport.query';
 
 @Injectable()
 export class UserService {
@@ -19,6 +23,10 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
+    private connection: DataSource,
+    private userQuery: UserQuery,
+    private airlineQuery: AirlineQuery,
+    private airportQuery: AirportQuery,
   ) {}
 
   async createUser(postUserRequest: PostUserRequest) {
@@ -160,6 +168,66 @@ export class UserService {
       return result;
     } catch (error) {
       return response.ERROR;
+    }
+  }
+
+  async retrieveUserReviews(getUserReviewsRequest: GetUserReviewsRequest) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      let airportReviews = await queryRunner.query(
+        this.userQuery.retrieveUserAirportReviewsQuery(
+          getUserReviewsRequest.userId,
+        ),
+      );
+      for (let airportReview of airportReviews) {
+        const airportReviewedServices = await queryRunner.query(
+          this.airportQuery.retrieveAirportReviewedServices(airportReview.id),
+        );
+        airportReview['reviewedAirportServices'] = airportReviewedServices.map(
+          (x) => x.name,
+        );
+        airportReview['type'] = 'AIRPORT';
+      }
+
+      let airlineReviews = await queryRunner.query(
+        this.userQuery.retrieveUserAirlineReviewsQuery(
+          getUserReviewsRequest.userId,
+        ),
+      );
+      for (let airlineReview of airlineReviews) {
+        const airlineReviewedServices = await queryRunner.query(
+          this.airlineQuery.retrieveAirlineReviewedServices(airlineReview.id),
+        );
+        airlineReview['reviewedAirlineServices'] = airlineReviewedServices.map(
+          (x) => x.name,
+        );
+        airlineReview['type'] = 'AIRLINE';
+      }
+
+      let userReviewResult = [...airportReviews, ...airlineReviews];
+
+      userReviewResult.sort(function (a, b) {
+        if (a.createdAt < b.createdAt) {
+          return 1;
+        }
+        if (a.createdAt > b.createdAt) {
+          return -1;
+        }
+        return 0;
+      });
+
+      const data = {
+        userReviews: userReviewResult,
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    } finally {
+      await queryRunner.release();
     }
   }
 }

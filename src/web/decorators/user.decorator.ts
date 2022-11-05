@@ -47,16 +47,16 @@ export const PatchUser = createParamDecorator(
     const patchUserData = ctx.switchToHttp().getRequest().body;
 
     if (!patchUserData.userId) {
-      throw new HttpException(response.USERID_EMPTY, 201);
+      throw new HttpException(response.USERID_EMPTY, 200);
     }
     if (patchUserData.userId <= 0) {
-      throw new HttpException(response.INVALID_USERID, 201);
+      throw new HttpException(response.INVALID_USERID, 200);
     }
     if (!patchUserData.nickName) {
-      throw new HttpException(response.USER_NICKNAME_EMPTY, 201);
+      throw new HttpException(response.USER_NICKNAME_EMPTY, 200);
     }
     if (!regularExp.nickNameRegex.test(patchUserData.nickName)) {
-      throw new HttpException(response.INVALID_USER_NICKNAME, 201);
+      throw new HttpException(response.INVALID_USER_NICKNAME, 200);
     }
 
     return patchUserData;
@@ -68,10 +68,10 @@ export const PatchUserStatus = createParamDecorator(
     const patchUserStatusData = ctx.switchToHttp().getRequest().body;
 
     if (!patchUserStatusData.userId) {
-      throw new HttpException(response.USERID_EMPTY, 201);
+      throw new HttpException(response.USERID_EMPTY, 200);
     }
     if (patchUserStatusData.userId <= 0) {
-      throw new HttpException(response.INVALID_USERID, 201);
+      throw new HttpException(response.INVALID_USERID, 200);
     }
 
     return patchUserStatusData;
@@ -83,12 +83,27 @@ export const GetUser = createParamDecorator(
     const getUserData = ctx.switchToHttp().getRequest().params;
 
     if (!getUserData.userId) {
-      throw new HttpException(response.USERID_EMPTY, 201);
+      throw new HttpException(response.USERID_EMPTY, 200);
     }
     if (getUserData.userId <= 0) {
-      throw new HttpException(response.INVALID_USERID, 201);
+      throw new HttpException(response.INVALID_USERID, 200);
     }
 
     return getUserData;
+  },
+);
+
+export const GetUserReviews = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const getUserReviewsData = ctx.switchToHttp().getRequest().params;
+
+    if (!getUserReviewsData.userId) {
+      throw new HttpException(response.USERID_EMPTY, 200);
+    }
+    if (getUserReviewsData.userId <= 0) {
+      throw new HttpException(response.INVALID_USERID, 200);
+    }
+
+    return getUserReviewsData;
   },
 );

@@ -5,9 +5,14 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { secret } from 'config/secret';
+import { UserQuery } from './user.query';
+import { AirlineModule } from '../airline/airline.module';
+import { AirportModule } from '../airport/airport.module';
 
 @Module({
   imports: [
+    AirlineModule,
+    AirportModule,
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
       secret: secret.jwtSecretKey,
@@ -15,6 +20,6 @@ import { secret } from 'config/secret';
     }),
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, UserQuery],
 })
 export class UserModule {}

@@ -21,5 +21,6 @@ import { AirlineService } from './airline.service';
   ],
   controllers: [AirlineController],
   providers: [AirlineService, AirlineQuery],
+  exports: [AirlineQuery],
 })
 export class AirlineModule {}

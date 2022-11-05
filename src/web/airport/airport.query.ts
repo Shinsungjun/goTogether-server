@@ -30,7 +30,7 @@ export class AirportQuery {
             User.nickName,
             AirportReview.score,
             AirportReview.content,
-            DATE_FORMAT(AirportReview.createdAt, '%Y.%m.%d') as createdAt
+            DATE_FORMAT(AirportReview.createdAt, '%y.%m.%d') as createdAt
       FROM ReviewAirportService
           join AirportReview on AirportReview.id = ReviewAirportService.airportReviewId
           join User on User.id = AirportReview.userId

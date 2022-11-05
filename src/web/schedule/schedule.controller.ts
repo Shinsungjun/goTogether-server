@@ -165,7 +165,7 @@ export class ScheduleController {
     requires: GetSchedulesRequest
     returns: GetSchedulesResponse
   */
-  @ApiOperation({ summary: '일정 리스트 조회 api' })
+  @ApiOperation({ summary: '일정 리스트 조회 API' })
   @ApiResponse({
     status: 1000,
     description: '성공',
@@ -250,7 +250,7 @@ export class ScheduleController {
     requires: PatchScheduleStatusRequest
     returns: BaseResponse
   */
-  @ApiOperation({ summary: '일정 삭제 api' })
+  @ApiOperation({ summary: '일정 삭제 API' })
   @ApiResponse({
     status: 1000,
     description: '성공',
@@ -343,7 +343,7 @@ export class ScheduleController {
     requires: GetScheduleRequest
     returns: GetScheduleResponse
   */
-  @ApiOperation({ summary: '일정 상세 조회 api' })
+  @ApiOperation({ summary: '일정 상세 조회 API' })
   @ApiResponse({
     status: 1000,
     description: '성공',
@@ -394,7 +394,7 @@ export class ScheduleController {
     requires: PatchScheduleRequest
     returns: PatchScheduleResponse
   */
-  @ApiOperation({ summary: '일정 수정 api' })
+  @ApiOperation({ summary: '일정 수정 API' })
   @ApiResponse({
     status: 1000,
     description: '성공',
@@ -509,7 +509,7 @@ export class ScheduleController {
     requires: GetScheduleReviewsRequest
     returns: GetScheduleReviewsResponse
   */
-  @ApiOperation({ summary: '일정 리뷰 조회 api' })
+  @ApiOperation({ summary: '일정 리뷰 조회 API' })
   @ApiResponse({
     status: 1000,
     description: '성공',

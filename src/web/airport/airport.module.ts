@@ -21,5 +21,6 @@ import { ReviewAirportService } from 'src/entity/reviewAirportService.entity';
   ],
   controllers: [AirportController],
   providers: [AirportService, AirportQuery],
+  exports: [AirportQuery],
 })
 export class AirportModule {}

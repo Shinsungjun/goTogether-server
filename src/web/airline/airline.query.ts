@@ -26,11 +26,11 @@ export class AirlineQuery {
     filterQuery: string,
   ): string => {
     return `
-      SELECT AirlineReview.id                                 as AirlineReviewId,
+      SELECT AirlineReview.id                                 as airlineReviewId,
             User.nickName,
             AirlineReview.score,
             AirlineReview.content,
-            DATE_FORMAT(AirlineReview.createdAt, '%Y.%m.%d') as createdAt
+            DATE_FORMAT(AirlineReview.createdAt, '%y.%m.%d') as createdAt
       FROM ReviewAirlineService
               join AirlineReview on AirlineReview.id = ReviewAirlineService.airlineReviewId
               join User on User.id = AirlineReview.userId
