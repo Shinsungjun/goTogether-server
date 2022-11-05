@@ -11,6 +11,7 @@ import { makeResponse } from 'common/function.utils';
 import { Payload } from '../auth/jwt/jwt.payload';
 import { PatchUserRequest } from './dto/patch-user.request';
 import { PatchUserStatusRequest } from './dto/patch-user-status.request';
+import { GetUserRequest } from './dto/get-user.request';
 
 @Injectable()
 export class UserService {
@@ -130,6 +131,31 @@ export class UserService {
       );
 
       const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    }
+  }
+
+  async retrieveUser(getUserRequest: GetUserRequest) {
+    try {
+      const user = await this.userRepository.findOneBy({
+        id: getUserRequest.userId,
+        status: Status.ACTIVE,
+      });
+      if (!user) {
+        return response.NON_EXIST_USER;
+      }
+      const data = {
+        user: {
+          userId: user.id,
+          nickName: user.nickName,
+          userName: user.userName,
+        },
+      };
+
+      const result = makeResponse(response.SUCCESS, data);
 
       return result;
     } catch (error) {

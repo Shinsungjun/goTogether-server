@@ -1,8 +1,9 @@
-import { Controller, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeader,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -10,10 +11,13 @@ import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import {
+  GetUser,
   PatchUser,
   PatchUserStatus,
   PostUser,
 } from '../decorators/user.decorator';
+import { GetUserRequest } from './dto/get-user.request';
+import { GetUserResponse } from './dto/get-user.response';
 import { PatchUserStatusRequest } from './dto/patch-user-status.request';
 import { PatchUserRequest } from './dto/patch-user.request';
 import { PostUserRequest } from './dto/post-user.request';
@@ -205,5 +209,49 @@ export class UserController {
     }
 
     return await this.userService.deleteUser(patchUserStatusRequest);
+  }
+
+  /*
+    description: 유저 정보 조회 api
+    requires: GetUserRequest
+    returns: GetUserResponse
+  */
+  @ApiOperation({ summary: '유저 정보 조회 api' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: GetUserResponse,
+  })
+  @ApiResponse({
+    status: 2014,
+    description: '존재하지 않는 유저입니다.',
+  })
+  @ApiResponse({
+    status: 2017,
+    description: '유저 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2018,
+    description: '유저 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiParam({
+    example: 1,
+    description: '유저 아이디',
+    name: 'userId',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('/:userId')
+  async getUser(@GetUser() getUserRequest: GetUserRequest) {
+    return await this.userService.retrieveUser(getUserRequest);
   }
 }
