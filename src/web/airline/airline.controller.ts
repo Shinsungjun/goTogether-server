@@ -65,7 +65,7 @@ export class AirlineController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async getAirlines(@Req() req: any) {
-    return this.airlineService.retrieveAirlines();
+    return await this.airlineService.retrieveAirlines();
   }
 
   /*

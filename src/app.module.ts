@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AirlineModule } from './web/airline/airline.module';
 import { AirportModule } from './web/airport/airport.module';
 import { AuthModule } from './web/auth/auth.module';
+import { InfoModule } from './web/info/info.module';
 import { ScheduleModule } from './web/schedule/schedule.module';
 import { SearchModule } from './web/search/search.module';
 import { UserModule } from './web/user/user.module';
@@ -28,6 +29,7 @@ import { UserModule } from './web/user/user.module';
     AirportModule,
     AirlineModule,
     SearchModule,
+    InfoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
