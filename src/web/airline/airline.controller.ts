@@ -101,20 +101,15 @@ export class AirlineController {
     example: 'JWT TOKEN',
     required: true,
   })
-  @ApiParam({
-    description: '리뷰 아이디',
-    name: 'reviewId',
-    type: 'number',
-  })
   @UseGuards(JwtAuthGuard)
-  @Post('/reviews/:reviewId/report')
+  @Post('/reviews/report')
   async postReviewReport(
     @Req() req: any,
     @PostAirlineReview()
     postAirlineReviewRequest: PostAirlineReviewReportRequest,
   ) {
     const userId = req.user.userId;
-
+    return response.SUCCESS;
     // return this.airlineService.createReviewReport(
     //   userId,
     //   postAirlineReviewRequest,
