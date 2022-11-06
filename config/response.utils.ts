@@ -334,6 +334,11 @@ export const response = {
     code: 2065,
     message: '탈퇴 사유 아이디는 0보다 큰 값을 입력해주세요.',
   },
+  USER_PASSWORD_WRONG: {
+    isSuccess: false,
+    code: 2066,
+    message: '비밀번호가 틀렸습니다.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,

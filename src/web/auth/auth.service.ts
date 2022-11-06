@@ -22,6 +22,7 @@ import { AuthQuery } from './auth.query';
 import { CompareIdPhoneNumberRequest } from './dto/compare-id-phoneNumber.request';
 import { PatchUserPasswordRequest } from './dto/patch-user-password.request';
 import { GetDuplicatePhoneNumberRequest } from './dto/get-duplicate-phoneNumber.request';
+import { GetPasswordRequest } from './dto/get-password.request';
 
 @Injectable()
 export class AuthService {
@@ -352,6 +353,31 @@ export class AuthService {
       });
       if (user) {
         return response.EXIST_PHONENUMBER;
+      }
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    }
+  }
+
+  async retrievePassword(
+    userId: number,
+    getPasswordRequest: GetPasswordRequest,
+  ) {
+    try {
+      const user = await this.userRepository.findOneBy({
+        id: userId,
+      });
+
+      const passwordCheck = await bcrypt.compare(
+        getPasswordRequest.password,
+        user.password,
+      );
+      if (!passwordCheck) {
+        return response.USER_PASSWORD_WRONG;
       }
 
       const result = makeResponse(response.SUCCESS, undefined);

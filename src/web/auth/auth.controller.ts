@@ -12,6 +12,7 @@ import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import {
   CompareIdPhoneNumber,
+  GetPassword,
   GetDuplicateId,
   GetDuplicatePhoneNumber,
   GetId,
@@ -24,6 +25,7 @@ import { AuthService } from './auth.service';
 import { CheckJwtRepsonse } from './dto/check-jwt.response';
 import { CompareIdPhoneNumberRequest } from './dto/compare-id-phoneNumber.request';
 import { CompareIdPhoneNumberResponse } from './dto/compare-id-phoneNumber.response';
+import { GetPasswordRequest } from './dto/get-password.request';
 import { GetDuplicateIdRequest } from './dto/get-duplicate-id.request';
 import { GetDuplicatePhoneNumberRequest } from './dto/get-duplicate-phoneNumber.request';
 import { GetIdRequest } from './dto/get-id.request';
@@ -377,6 +379,59 @@ export class AuthController {
     @PatchUserPassword() patchUserPasswordRequest: PatchUserPasswordRequest,
   ) {
     return await this.authService.editUserPassword(patchUserPasswordRequest);
+  }
+
+  /*
+  description: 비밀번호 확인 api
+  requires: GetAuthPasswordRequest
+  returns: BaseResponse
+  */
+  @ApiOperation({ summary: '비밀번호 확인 api' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2005,
+    description: '비밀번호를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2006,
+    description: '비밀번호의 형식을 확인해주세요.',
+  })
+  @ApiResponse({
+    status: 2066,
+    description: '비밀번호가 틀렸습니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @ApiQuery({
+    example: 'hyunbin7231',
+    description: '비밀번호',
+    type: GetPasswordRequest,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('/password')
+  async getPassword(
+    @Req() req: any,
+    @GetPassword() getPasswordRequest: GetPasswordRequest,
+  ) {
+    const userId = req.user.userId;
+
+    return await this.authService.retrievePassword(userId, getPasswordRequest);
   }
 
   /*

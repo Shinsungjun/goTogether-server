@@ -158,3 +158,18 @@ export const GetDuplicatePhoneNumber = createParamDecorator(
     return getDuplicatePhoneNumberData;
   },
 );
+
+export const GetPassword = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const getPasswordData = ctx.switchToHttp().getRequest().query;
+
+    if (!getPasswordData.password) {
+      throw new HttpException(response.USER_PASSWORD_EMPTY, 200);
+    }
+    if (!regularExp.passwordRegex.test(getPasswordData.password)) {
+      throw new HttpException(response.INVALID_USER_PASSWORD, 200);
+    }
+
+    return getPasswordData;
+  },
+);
