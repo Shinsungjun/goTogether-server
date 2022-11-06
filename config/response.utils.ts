@@ -309,7 +309,7 @@ export const response = {
     code: 2060,
     message: '존재하지 않는 공항 리뷰입니다.',
   },
-  REVIEW_TIME_ERROR: {
+  REVIEW_EDIT_TIME_ERROR: {
     isSuccess: false,
     code: 2061,
     message: '작성 시간이 48시간이 넘었습니다.',
@@ -318,6 +318,11 @@ export const response = {
     isSuccess: false,
     code: 2062,
     message: '유저가 작성한 리뷰가 아닙니다.',
+  },
+  REVIEW_DELETE_TIME_ERROR: {
+    isSuccess: false,
+    code: 2063,
+    message: '작성일이 30일이 지나지 않았습니다.',
   },
   ERROR: {
     isSuccess: false,

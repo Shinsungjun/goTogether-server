@@ -83,4 +83,13 @@ export class AirportQuery {
         and TIMESTAMPDIFF(hour, AirportReview.createdAt, NOW()) >= 0;
     `;
   };
+
+  retrieveAirportReviewDeleteTimeQuery = (airportReviewId: number): string => {
+    return `
+      SELECT AirportReview.id
+      FROM AirportReview
+      WHERE AirportReview.id = ${airportReviewId}
+        and TIMESTAMPDIFF(day , AirportReview.createdAt, NOW()) >= 30;
+  `;
+  };
 }

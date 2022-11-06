@@ -12,6 +12,7 @@ import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import {
+  DeleteAirportReview,
   GetAirport,
   GetAirportReviews,
   GetAirportServices,
@@ -19,6 +20,7 @@ import {
   PostAirportReview,
 } from '../decorators/airport.decorator';
 import { AirportService } from './airport.service';
+import { DeleteAirportReviewRequest } from './dto/delete-airport-review.request';
 import { GetAirportReviewsRequest } from './dto/get-airport-review.request';
 import { GetAirportReviewsResponse } from './dto/get-airport-review.response';
 import { GetAirportServicesRequest } from './dto/get-airport-services.request';
@@ -400,7 +402,7 @@ export class AirportController {
     required: true,
   })
   @UseGuards(JwtAuthGuard)
-  @Patch('/reviews/:airportReviewId')
+  @Patch('/reviews')
   async patchAirlineReview(
     @Req() req: any,
     @PatchAirportReview() patchAirportReviewRequest: PatchAirportReviewRequest,
@@ -410,6 +412,70 @@ export class AirportController {
     return await this.airportService.editAirportReview(
       userId,
       patchAirportReviewRequest,
+    );
+  }
+
+  /*
+    description: 공항 리뷰 삭제 api
+    requires: DeleteAirportReviewRequest
+    returns: BaseResponse
+  */
+  @ApiOperation({ summary: '공항 리뷰 삭제 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2055,
+    description: '리뷰 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2056,
+    description: '리뷰 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2060,
+    description: '존재하지 않는 공항 리뷰입니다.',
+  })
+  @ApiResponse({
+    status: 2062,
+    description: '유저가 작성한 리뷰가 아닙니다.',
+  })
+  @ApiResponse({
+    status: 2063,
+    description: '작성일이 30일이 지나지 않았습니다.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiBody({
+    description: '공항 리뷰 삭제 DTO',
+    type: DeleteAirportReviewRequest,
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Patch('/reviews/status')
+  async patchAirlineReviewStatus(
+    @Req() req: any,
+    @DeleteAirportReview()
+    deleteAirportReviewRequest: DeleteAirportReviewRequest,
+  ) {
+    const userId = req.user.userId;
+
+    return await this.airportService.deleteAirportReview(
+      userId,
+      deleteAirportReviewRequest,
     );
   }
 }

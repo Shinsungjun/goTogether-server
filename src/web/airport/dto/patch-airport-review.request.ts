@@ -4,7 +4,7 @@ import { IsNumber, IsString } from 'class-validator';
 export class PatchAirportReviewRequest {
   @ApiProperty({
     example: 1,
-    description: '항공사 리뷰 아이디',
+    description: '공항 리뷰 아이디',
   })
   @IsNumber()
   airportReviewId: number;

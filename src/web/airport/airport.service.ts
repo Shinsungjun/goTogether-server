@@ -16,6 +16,7 @@ import { AirportReview } from 'src/entity/airportReview.entity';
 import { ReviewAirportService } from 'src/entity/reviewAirportService.entity';
 import { Schedule } from 'src/entity/schedule.entity';
 import { PatchAirportReviewRequest } from './dto/patch-airport-review.request';
+import { DeleteAirportReviewRequest } from './dto/delete-airport-review.request';
 
 @Injectable()
 export class AirportService {
@@ -327,7 +328,7 @@ export class AirportService {
         ),
       );
       if (!reviewTime) {
-        return response.REVIEW_TIME_ERROR;
+        return response.REVIEW_EDIT_TIME_ERROR;
       }
 
       await this.airportReviewRepository.update(
@@ -344,6 +345,68 @@ export class AirportService {
       return result;
     } catch (error) {
       return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async deleteAirportReview(
+    userId: number,
+    deleteAirportReviewRequest: DeleteAirportReviewRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // 존재하는 리뷰인지 확인
+      const airportReview = await this.airportReviewRepository.findOneBy({
+        id: deleteAirportReviewRequest.airportReviewId,
+        status: Status.ACTIVE,
+      });
+      if (!airportReview) {
+        return response.NON_EXIST_AIRPORT_REVIEW;
+      }
+
+      // 본인의 리뷰인지 확인
+      if (airportReview.userId != userId) {
+        return response.REVIEW_USER_PERMISSION_DENIED;
+      }
+
+      // 작성한지 30일 이후인지 확인
+      const [reviewTime] = await queryRunner.query(
+        this.airportQuery.retrieveAirportReviewDeleteTimeQuery(
+          deleteAirportReviewRequest.airportReviewId,
+        ),
+      );
+      if (!reviewTime) {
+        return response.REVIEW_DELETE_TIME_ERROR;
+      }
+
+      await queryRunner.manager.update(
+        AirportReview,
+        {
+          id: deleteAirportReviewRequest.airportReviewId,
+        },
+        {
+          status: Status.DELETED,
+        },
+      );
+
+      await queryRunner.manager.update(
+        ReviewAirportService,
+        {
+          airportReviewId: deleteAirportReviewRequest.airportReviewId,
+        },
+        {
+          status: Status.DELETED,
+        },
+      );
+
+      const result = makeResponse(response.SUCCESS, undefined);
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
     }

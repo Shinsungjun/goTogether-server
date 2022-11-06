@@ -100,10 +100,10 @@ export const PatchAirportReview = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const patchAirportReviewData = ctx.switchToHttp().getRequest().body;
 
-    if (!patchAirportReviewData.airlineReviewId) {
+    if (!patchAirportReviewData.airportReviewId) {
       throw new HttpException(response.REVIEWID_EMPTY, 200);
     }
-    if (patchAirportReviewData.airlineReviewId <= 0) {
+    if (patchAirportReviewData.airportReviewId <= 0) {
       throw new HttpException(response.INVALID_REVIEWID, 200);
     }
     if (!patchAirportReviewData.content) {
@@ -114,5 +114,20 @@ export const PatchAirportReview = createParamDecorator(
     }
 
     return patchAirportReviewData;
+  },
+);
+
+export const DeleteAirportReview = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const deleteAirportReviewData = ctx.switchToHttp().getRequest().body;
+
+    if (!deleteAirportReviewData.airportReviewId) {
+      throw new HttpException(response.REVIEWID_EMPTY, 200);
+    }
+    if (deleteAirportReviewData.airportReviewId <= 0) {
+      throw new HttpException(response.INVALID_REVIEWID, 200);
+    }
+
+    return deleteAirportReviewData;
   },
 );

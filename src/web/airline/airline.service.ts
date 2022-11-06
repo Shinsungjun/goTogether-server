@@ -316,7 +316,7 @@ export class AirlineService {
         ),
       );
       if (!reviewTime) {
-        return response.REVIEW_TIME_ERROR;
+        return response.REVIEW_EDIT_TIME_ERROR;
       }
 
       await this.airlineReviewRepository.update(
