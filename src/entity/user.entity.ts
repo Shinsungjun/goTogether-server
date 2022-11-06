@@ -24,6 +24,12 @@ export class User {
   @Column({ length: 20 })
   accountStatus: string;
 
+  @Column()
+  userDeleteReasonId: number;
+
+  @Column()
+  deleteEtcContents: string;
+
   @Column({ length: 10, default: 'ACTIVE' })
   status: string;
 }

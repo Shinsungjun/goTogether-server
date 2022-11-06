@@ -103,17 +103,18 @@ export class AirlineController {
   })
   @UseGuards(JwtAuthGuard)
   @Post('/reviews/report')
-  async postReviewReport(
+  async postAirlineReviewReport(
     @Req() req: any,
-    @PostAirlineReview()
     postAirlineReviewRequest: PostAirlineReviewReportRequest,
   ) {
     const userId = req.user.userId;
-    return response.SUCCESS;
-    // return this.airlineService.createReviewReport(
+
+    // return this.airlineService.createAirlineReviewReport(
     //   userId,
     //   postAirlineReviewRequest,
     // );
+
+    return response.SUCCESS;
   }
 
   /*

@@ -478,4 +478,50 @@ export class AirportController {
       deleteAirportReviewRequest,
     );
   }
+
+  /*
+    description: 공항 리뷰 신고 api
+    requires: PostAirlineReviewReportRequest
+    returns: PostAirlineReviewReportResponse
+  */
+  @ApiOperation({ summary: '공항 리뷰 신고 API' })
+  @ApiResponse({
+    status: 1000,
+    description: '성공',
+    type: BaseResponse,
+  })
+  @ApiResponse({
+    status: 2000,
+    description: 'jwt 검증 실패',
+  })
+  @ApiResponse({
+    status: 2055,
+    description: '리뷰 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2056,
+    description: '리뷰 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 4000,
+    description: '서버 에러',
+  })
+  @ApiHeader({
+    description: 'jwt token',
+    name: 'x-access-token',
+    example: 'JWT TOKEN',
+    required: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('/reviews/report')
+  async postAirportReviewReport(@Req() req: any, postAirlineReviewRequest) {
+    const userId = req.user.userId;
+
+    // return this.airlineService.createAirlineReviewReport(
+    //   userId,
+    //   postAirlineReviewRequest,
+    // );
+
+    return response.SUCCESS;
+  }
 }

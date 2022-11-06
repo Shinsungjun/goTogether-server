@@ -17,6 +17,7 @@ import { ReviewAirlineService } from 'src/entity/reviewAirlineService.entity';
 import { Schedule } from 'src/entity/schedule.entity';
 import { PatchAirlineReviewRequest } from './dto/patch-airline-review.request';
 import { DeleteAirlineReviewRequest } from './dto/delete-airline-review.request';
+import { PostAirlineReviewReportRequest } from './dto/post-airline-review-report.request';
 
 @Injectable()
 export class AirlineService {
@@ -401,5 +402,21 @@ export class AirlineService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async createAirlineReviewReport(
+    userId: number,
+    postAirlineReviewReportRequest: PostAirlineReviewReportRequest,
+  ) {
+    try {
+      // 존재하는 리뷰인지 확인
+      const airlineReview = await this.airlineReviewRepository.findOneBy({
+        id: postAirlineReviewReportRequest.airlineReviewId,
+        status: Status.ACTIVE,
+      });
+      if (!airlineReview) {
+        return response.NON_EXIST_AIRLINE_REVIEW;
+      }
+    } catch (error) {}
   }
 }
