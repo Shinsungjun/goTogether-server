@@ -8,4 +8,11 @@ export class PatchUserStatusRequest {
   })
   @IsNumber()
   userId: number;
+
+  @ApiProperty({
+    example: 1,
+    description: '회원 탈퇴 사유 아이디',
+  })
+  @IsNumber()
+  userDeleteReasonId: number;
 }

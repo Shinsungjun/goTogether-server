@@ -63,18 +63,23 @@ export const PatchUser = createParamDecorator(
   },
 );
 
-export const PatchUserStatus = createParamDecorator(
+export const DeleteUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
-    const patchUserStatusData = ctx.switchToHttp().getRequest().body;
+    const deleteUserData = ctx.switchToHttp().getRequest().body;
 
-    if (!patchUserStatusData.userId) {
+    if (!deleteUserData.userId) {
       throw new HttpException(response.USERID_EMPTY, 200);
     }
-    if (patchUserStatusData.userId <= 0) {
+    if (deleteUserData.userId <= 0) {
       throw new HttpException(response.INVALID_USERID, 200);
     }
-
-    return patchUserStatusData;
+    if (!deleteUserData.userDeleteReasonId) {
+      throw new HttpException(response.USER_DELETE_REASON_ID_EMPTY, 200);
+    }
+    if (deleteUserData.userDeleteReasonId <= 0) {
+      throw new HttpException(response.INVALID_USER_DELETE_REASON_ID, 200);
+    }
+    return deleteUserData;
   },
 );
 

@@ -11,10 +11,10 @@ import { BaseResponse } from 'config/base.response';
 import { response } from 'config/response.utils';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import {
+  DeleteUser,
   GetUser,
   GetUserReviews,
   PatchUser,
-  PatchUserStatus,
   PostUser,
 } from '../decorators/user.decorator';
 import { GetUserReviewsRequest } from './dto/get-user-reviews.request';
@@ -187,6 +187,14 @@ export class UserController {
     description: '유저 아이디를 확인해주세요.',
   })
   @ApiResponse({
+    status: 2064,
+    description: '탈퇴 사유 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2065,
+    description: '탈퇴 사유 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
     status: 4000,
     description: '서버 에러',
   })
@@ -204,7 +212,7 @@ export class UserController {
   @Patch('/status')
   async patchUserStatus(
     @Req() req: any,
-    @PatchUserStatus() patchUserStatusRequest: PatchUserStatusRequest,
+    @DeleteUser() patchUserStatusRequest: PatchUserStatusRequest,
   ) {
     const userIdJwt = req.user.userId;
     if (userIdJwt != patchUserStatusRequest.userId) {

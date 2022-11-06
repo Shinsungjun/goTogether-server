@@ -134,6 +134,7 @@ export class UserService {
           id: patchUserStatusRequest.userId,
         },
         {
+          userDeleteReasonId: patchUserStatusRequest.userDeleteReasonId,
           status: Status.DELETED,
         },
       );
