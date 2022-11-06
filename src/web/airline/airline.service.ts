@@ -16,6 +16,7 @@ import { AirlineReview } from 'src/entity/airlineReview.entity';
 import { ReviewAirlineService } from 'src/entity/reviewAirlineService.entity';
 import { Schedule } from 'src/entity/schedule.entity';
 import { PatchAirlineReviewRequest } from './dto/patch-airline-review.request';
+import { DeleteAirlineReviewRequest } from './dto/delete-airline-review.request';
 
 @Injectable()
 export class AirlineService {
@@ -333,6 +334,70 @@ export class AirlineService {
       return result;
     } catch (error) {
       return response.ERROR;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async deleteAirlineReview(
+    userId: number,
+    deleteAirlineReviewRequest: DeleteAirlineReviewRequest,
+  ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // 존재하는 리뷰인지 확인
+      const airlineReview = await this.airlineReviewRepository.findOneBy({
+        id: deleteAirlineReviewRequest.airlineReviewId,
+        status: Status.ACTIVE,
+      });
+      if (!airlineReview) {
+        return response.NON_EXIST_AIRLINE_REVIEW;
+      }
+
+      // 본인의 리뷰인지 확인
+      if (airlineReview.userId != userId) {
+        return response.REVIEW_USER_PERMISSION_DENIED;
+      }
+
+      // 작성한지 30일 이후인지 확인
+      const [reviewTime] = await queryRunner.query(
+        this.airlineQuery.retrieveAirlineReviewDeleteTimeQuery(
+          deleteAirlineReviewRequest.airlineReviewId,
+        ),
+      );
+      if (!reviewTime) {
+        return response.REVIEW_DELETE_TIME_ERROR;
+      }
+
+      await queryRunner.manager.update(
+        AirlineReview,
+        {
+          id: deleteAirlineReviewRequest.airlineReviewId,
+        },
+        {
+          status: Status.DELETED,
+        },
+      );
+
+      await queryRunner.manager.update(
+        ReviewAirlineService,
+        {
+          airlineReviewId: deleteAirlineReviewRequest.airlineReviewId,
+        },
+        {
+          status: Status.DELETED,
+        },
+      );
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      await queryRunner.commitTransaction();
+
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
     }

@@ -131,3 +131,18 @@ export const PatchAirlineReview = createParamDecorator(
     return patchAirlineReviewData;
   },
 );
+
+export const DeleteAirlineReview = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const deleteAirlineReviewData = ctx.switchToHttp().getRequest().body;
+
+    if (!deleteAirlineReviewData.airlineReviewId) {
+      throw new HttpException(response.REVIEWID_EMPTY, 200);
+    }
+    if (deleteAirlineReviewData.airlineReviewId <= 0) {
+      throw new HttpException(response.INVALID_REVIEWID, 200);
+    }
+
+    return deleteAirlineReviewData;
+  },
+);

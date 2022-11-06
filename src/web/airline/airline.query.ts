@@ -86,4 +86,13 @@ export class AirlineQuery {
         and TIMESTAMPDIFF(hour, AirlineReview.createdAt, NOW()) >= 0
     `;
   };
+
+  retrieveAirlineReviewDeleteTimeQuery = (airlineReviewId: number): string => {
+    return `
+      SELECT AirlineReview.id
+      FROM AirlineReview
+      WHERE AirlineReview.id = ${airlineReviewId}
+        and TIMESTAMPDIFF(day , AirlineReview.createdAt, NOW()) >= 30;
+  `;
+  };
 }
