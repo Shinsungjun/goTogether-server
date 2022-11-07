@@ -18,6 +18,7 @@ import {
   GetAirlineServices,
   PatchAirlineReview,
   PostAirlineReview,
+  PostAirlineReviewReport,
 } from '../decorators/airline.decorator';
 import { AirlineService } from './airline.service';
 import { DeleteAirlineReviewRequest } from './dto/delete-airline-review.request';
@@ -101,20 +102,23 @@ export class AirlineController {
     example: 'JWT TOKEN',
     required: true,
   })
+  @ApiBody({
+    description: '항공사 리뷰 신고 DTO',
+    type: PostAirlineReviewReportRequest,
+  })
   @UseGuards(JwtAuthGuard)
   @Post('/reviews/report')
   async postAirlineReviewReport(
     @Req() req: any,
-    postAirlineReviewRequest: PostAirlineReviewReportRequest,
+    @PostAirlineReviewReport()
+    postAirlineReviewReportRequest: PostAirlineReviewReportRequest,
   ) {
     const userId = req.user.userId;
 
-    // return this.airlineService.createAirlineReviewReport(
-    //   userId,
-    //   postAirlineReviewRequest,
-    // );
-
-    return response.SUCCESS;
+    return this.airlineService.createAirlineReviewReport(
+      userId,
+      postAirlineReviewReportRequest,
+    );
   }
 
   /*

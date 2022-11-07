@@ -18,6 +18,8 @@ import { Schedule } from 'src/entity/schedule.entity';
 import { PatchAirlineReviewRequest } from './dto/patch-airline-review.request';
 import { DeleteAirlineReviewRequest } from './dto/delete-airline-review.request';
 import { PostAirlineReviewReportRequest } from './dto/post-airline-review-report.request';
+import { AirlineReviewReport } from 'src/entity/airlineReviewReport.entity';
+import { ReviewReportReason } from 'src/entity/reviewReportReason.entity';
 
 @Injectable()
 export class AirlineService {
@@ -31,6 +33,10 @@ export class AirlineService {
     private airlineReviewRepository: Repository<AirlineReview>,
     @InjectRepository(ReviewAirlineService)
     private reviewAirlineServiceRepository: Repository<ReviewAirlineService>,
+    @InjectRepository(AirlineReviewReport)
+    private airlineReviewReportRepository: Repository<AirlineReviewReport>,
+    @InjectRepository(ReviewReportReason)
+    private reviewReportReasonRepository: Repository<ReviewReportReason>,
 
     private airlineQuery: AirlineQuery,
     private connection: DataSource,
@@ -417,6 +423,39 @@ export class AirlineService {
       if (!airlineReview) {
         return response.NON_EXIST_AIRLINE_REVIEW;
       }
-    } catch (error) {}
+
+      // 존재하는 리뷰 신고 사유인지 확인
+      if (
+        !(await this.reviewReportReasonRepository.findOneBy({
+          id: postAirlineReviewReportRequest.reviewReportReasonId,
+          status: Status.ACTIVE,
+        }))
+      ) {
+        return response.NON_EXIST_REVIEW_REPORT_REASON;
+      }
+
+      // 리뷰 신고 등록
+      let airlineReviewReportRegister = new AirlineReviewReport();
+      airlineReviewReportRegister.userId = userId;
+      airlineReviewReportRegister.airlineReviewId =
+        postAirlineReviewReportRequest.airlineReviewId;
+      airlineReviewReportRegister.reviewReportReasonId =
+        postAirlineReviewReportRequest.reviewReportReasonId;
+      if (postAirlineReviewReportRequest.etcReason) {
+        airlineReviewReportRegister.etcReason =
+          postAirlineReviewReportRequest.etcReason;
+      }
+      await this.airlineReviewReportRepository.save(
+        airlineReviewReportRegister,
+      );
+
+      // 이후 처리
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
+    }
   }
 }

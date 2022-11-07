@@ -339,6 +339,21 @@ export const response = {
     code: 2066,
     message: '비밀번호가 틀렸습니다.',
   },
+  REVIEW_REPORT_REASON_ID_EMPTY: {
+    isSuccess: false,
+    code: 2067,
+    message: '리뷰 신고 사유 아이디를 입력해주세요.',
+  },
+  INVALID_REVIEW_REPORT_REASON_ID: {
+    isSuccess: false,
+    code: 2068,
+    message: '리뷰 신고 사유 아이디는 0보다 큰 값을 입력해주세요.',
+  },
+  NON_EXIST_REVIEW_REPORT_REASON: {
+    isSuccess: false,
+    code: 2069,
+    message: '존재하지 않는 리뷰 신고 사유입니다.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,
