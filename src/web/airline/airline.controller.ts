@@ -72,7 +72,7 @@ export class AirlineController {
   /*
     description: 항공사 리뷰 신고 api
     requires: PostAirlineReviewReportRequest
-    returns: PostAirlineReviewReportResponse
+    returns: BaseResponse
   */
   @ApiOperation({ summary: '항공사 리뷰 신고 API' })
   @ApiResponse({
@@ -91,6 +91,22 @@ export class AirlineController {
   @ApiResponse({
     status: 2056,
     description: '리뷰 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2059,
+    description: '존재하지 않는 항공사 리뷰입니다.',
+  })
+  @ApiResponse({
+    status: 2067,
+    description: '리뷰 신고 사유 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2068,
+    description: '리뷰 신고 사유 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2069,
+    description: '존재하지 않는 리뷰 신고 사유입니다.',
   })
   @ApiResponse({
     status: 4000,

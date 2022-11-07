@@ -18,6 +18,7 @@ import {
   GetAirportServices,
   PatchAirportReview,
   PostAirportReview,
+  PostAirportReviewReport,
 } from '../decorators/airport.decorator';
 import { AirportService } from './airport.service';
 import { DeleteAirportReviewRequest } from './dto/delete-airport-review.request';
@@ -29,6 +30,7 @@ import { GetAirportRequest } from './dto/get-airport.request';
 import { GetAirportResponse } from './dto/get-airport.response';
 import { GetAirportsResponse } from './dto/get-airports.response';
 import { PatchAirportReviewRequest } from './dto/patch-airport-review.request';
+import { PostAirportReviewReportRequest } from './dto/post-airport-review-report.request';
 import { PostAirportReviewRequest } from './dto/post-airport-review.request';
 import { PostAirportResponse } from './dto/post-airport-review.response';
 
@@ -481,8 +483,8 @@ export class AirportController {
 
   /*
     description: 공항 리뷰 신고 api
-    requires: PostAirlineReviewReportRequest
-    returns: PostAirlineReviewReportResponse
+    requires: PostAirportReviewReportRequest
+    returns: BaseResponse
   */
   @ApiOperation({ summary: '공항 리뷰 신고 API' })
   @ApiResponse({
@@ -503,6 +505,22 @@ export class AirportController {
     description: '리뷰 아이디는 0보다 큰 값을 입력해주세요.',
   })
   @ApiResponse({
+    status: 2060,
+    description: '존재하지 않는 공항 리뷰입니다.',
+  })
+  @ApiResponse({
+    status: 2067,
+    description: '리뷰 신고 사유 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2068,
+    description: '리뷰 신고 사유 아이디는 0보다 큰 값을 입력해주세요.',
+  })
+  @ApiResponse({
+    status: 2069,
+    description: '존재하지 않는 리뷰 신고 사유입니다.',
+  })
+  @ApiResponse({
     status: 4000,
     description: '서버 에러',
   })
@@ -512,16 +530,22 @@ export class AirportController {
     example: 'JWT TOKEN',
     required: true,
   })
+  @ApiBody({
+    description: '공항 리뷰 신고 DTO',
+    type: PostAirportReviewReportRequest,
+  })
   @UseGuards(JwtAuthGuard)
   @Post('/reviews/report')
-  async postAirportReviewReport(@Req() req: any, postAirlineReviewRequest) {
+  async postAirportReviewReport(
+    @Req() req: any,
+    @PostAirportReviewReport()
+    postAirportReviewReportRequest: PostAirportReviewReportRequest,
+  ) {
     const userId = req.user.userId;
 
-    // return this.airlineService.createAirlineReviewReport(
-    //   userId,
-    //   postAirlineReviewRequest,
-    // );
-
-    return response.SUCCESS;
+    return this.airportService.createAirportReviewReport(
+      userId,
+      postAirportReviewReportRequest,
+    );
   }
 }

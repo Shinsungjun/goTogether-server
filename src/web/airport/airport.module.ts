@@ -8,6 +8,8 @@ import { AirportQuery } from './airport.query';
 import { AuthModule } from '../auth/auth.module';
 import { AirportReview } from 'src/entity/airportReview.entity';
 import { ReviewAirportService } from 'src/entity/reviewAirportService.entity';
+import { ReviewReportReason } from 'src/entity/reviewReportReason.entity';
+import { AirportReviewReport } from 'src/entity/airportReviewReport.entity';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { ReviewAirportService } from 'src/entity/reviewAirportService.entity';
       AirportServiceEntity,
       AirportReview,
       ReviewAirportService,
+      ReviewReportReason,
+      AirportReviewReport,
     ]),
   ],
   controllers: [AirportController],

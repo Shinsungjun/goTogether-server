@@ -17,6 +17,9 @@ import { ReviewAirportService } from 'src/entity/reviewAirportService.entity';
 import { Schedule } from 'src/entity/schedule.entity';
 import { PatchAirportReviewRequest } from './dto/patch-airport-review.request';
 import { DeleteAirportReviewRequest } from './dto/delete-airport-review.request';
+import { PostAirportReviewReportRequest } from './dto/post-airport-review-report.request';
+import { ReviewReportReason } from 'src/entity/reviewReportReason.entity';
+import { AirportReviewReport } from 'src/entity/airportReviewReport.entity';
 
 @Injectable()
 export class AirportService {
@@ -30,6 +33,10 @@ export class AirportService {
     private airportReviewRepository: Repository<AirportReview>,
     @InjectRepository(ReviewAirportService)
     private reviewAirportServiceRepository: Repository<ReviewAirportService>,
+    @InjectRepository(AirportReviewReport)
+    private airportReviewReportRepository: Repository<AirportReviewReport>,
+    @InjectRepository(ReviewReportReason)
+    private reviewReportReasonRepository: Repository<ReviewReportReason>,
 
     private airportQuery: AirportQuery,
     private connection: DataSource,
@@ -409,6 +416,55 @@ export class AirportService {
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  async createAirportReviewReport(
+    userId: number,
+    postAirportReviewReportRequest: PostAirportReviewReportRequest,
+  ) {
+    try {
+      // 존재하는 리뷰인지 확인
+      const airportReview = await this.airportReviewRepository.findOneBy({
+        id: postAirportReviewReportRequest.airportReviewId,
+        status: Status.ACTIVE,
+      });
+      if (!airportReview) {
+        return response.NON_EXIST_AIRPORT_REVIEW;
+      }
+
+      // 존재하는 리뷰 신고 사유인지 확인
+      if (
+        !(await this.reviewReportReasonRepository.findOneBy({
+          id: postAirportReviewReportRequest.reviewReportReasonId,
+          status: Status.ACTIVE,
+        }))
+      ) {
+        return response.NON_EXIST_REVIEW_REPORT_REASON;
+      }
+
+      // 리뷰 신고 등록
+      let airportReviewReportRegister = new AirportReviewReport();
+      airportReviewReportRegister.userId = userId;
+      airportReviewReportRegister.airportReviewId =
+        postAirportReviewReportRequest.airportReviewId;
+      airportReviewReportRegister.reviewReportReasonId =
+        postAirportReviewReportRequest.reviewReportReasonId;
+      if (postAirportReviewReportRequest.etcReason) {
+        airportReviewReportRegister.etcReason =
+          postAirportReviewReportRequest.etcReason;
+      }
+      await this.airportReviewReportRepository.save(
+        airportReviewReportRegister,
+      );
+
+      // 이후 처리
+
+      const result = makeResponse(response.SUCCESS, undefined);
+
+      return result;
+    } catch (error) {
+      return response.ERROR;
     }
   }
 }

@@ -131,3 +131,24 @@ export const DeleteAirportReview = createParamDecorator(
     return deleteAirportReviewData;
   },
 );
+
+export const PostAirportReviewReport = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const postAirportReviewReportData = ctx.switchToHttp().getRequest().body;
+
+    if (!postAirportReviewReportData.airportReviewId) {
+      throw new HttpException(response.REVIEWID_EMPTY, 201);
+    }
+    if (postAirportReviewReportData.airportReviewId <= 0) {
+      throw new HttpException(response.INVALID_REVIEWID, 201);
+    }
+    if (!postAirportReviewReportData.reviewReportReasonId) {
+      throw new HttpException(response.REVIEW_REPORT_REASON_ID_EMPTY, 201);
+    }
+    if (postAirportReviewReportData.reviewReportReasonId <= 0) {
+      throw new HttpException(response.INVALID_REVIEW_REPORT_REASON_ID, 201);
+    }
+
+    return postAirportReviewReportData;
+  },
+);
