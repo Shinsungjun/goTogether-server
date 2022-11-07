@@ -117,7 +117,7 @@ export class AirportService {
 
       // 공항 서비스 조회
       const airportServices = await this.airportServiceRepository.find({
-        select: ['id', 'name'],
+        select: ['id', 'name', 'website'],
         where: {
           airportId: getAirportRequest.airportId,
           status: Status.ACTIVE,

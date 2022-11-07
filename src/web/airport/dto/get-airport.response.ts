@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsObject, IsString } from 'class-validator';
 import { BaseResponse } from 'config/base.response';
 
-class AirportServicesInfo {
+class AirportServiceInfo {
   @ApiProperty({
     example: 1,
     description: '공항 서비스 아이디',
@@ -11,11 +11,18 @@ class AirportServicesInfo {
   id: number;
 
   @ApiProperty({
-    example: '한가족 서비스',
+    example: '임산부, 유아, 어린이 동반',
     description: '공항 서비스 이름',
   })
   @IsString()
   name: string;
+
+  @ApiProperty({
+    example: 'https://www.airport.co.kr/gimpo/cms/frCon/index.do?MENU_ID=1440',
+    description: '공항 서비스 웹사이트',
+  })
+  @IsString()
+  website: string;
 }
 
 class AirportDetailInfo {
@@ -65,46 +72,58 @@ class AirportDetailInfo {
     example: [
       {
         id: 1,
-        name: '임산부, 유아, 어린이',
+        name: '임산부, 유아, 어린이 동반',
+        website:
+          'https://www.airport.co.kr/gimpo/cms/frCon/index.do?MENU_ID=1440',
       },
       {
         id: 2,
-        name: '교통약자 동반',
+        name: '장애인, 고령자 동반',
+        website:
+          'https://www.airport.co.kr/gimpo/cms/frCon/index.do?MENU_ID=1450',
       },
       {
         id: 3,
         name: '반려동물 동반',
+        website:
+          'https://www.airport.co.kr/gimpo/cms/frCon/index.do?MENU_ID=1460',
       },
     ],
     description: '공항 서비스 리스트',
-    type: AirportServicesInfo,
+    type: AirportServiceInfo,
     isArray: true,
   })
   @IsArray()
-  airportServices: Array<AirportServicesInfo>;
+  airportServices: Array<AirportServiceInfo>;
 }
 
 class GetAirportResultData {
   @ApiProperty({
     example: {
       airportId: 1,
-      airportName: '인천국제공항',
-      customerServiceNumber: '1577-2600',
-      website: 'https://www.airport.kr/ap/ko/index.do',
-      avgReview: '3.5',
+      airportName: '김포공항',
+      customerServiceNumber: '02-2660-2478',
+      website: 'https://www.airport.co.kr/gimpo/index.do',
+      avgReview: '3.3',
       availableAt: '평일 9:00 ~ 18:00',
       airportServices: [
         {
           id: 1,
-          name: '임산부, 유아, 어린이',
+          name: '임산부, 유아, 어린이 동반',
+          website:
+            'https://www.airport.co.kr/gimpo/cms/frCon/index.do?MENU_ID=1440',
         },
         {
           id: 2,
-          name: '교통약자 동반',
+          name: '장애인, 고령자 동반',
+          website:
+            'https://www.airport.co.kr/gimpo/cms/frCon/index.do?MENU_ID=1450',
         },
         {
           id: 3,
           name: '반려동물 동반',
+          website:
+            'https://www.airport.co.kr/gimpo/cms/frCon/index.do?MENU_ID=1460',
         },
       ],
     },
