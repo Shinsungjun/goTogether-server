@@ -27,6 +27,7 @@ import { GetAirlineReviewsResponse } from './dto/get-airline-reviews.response';
 import { GetAirlineServicesRequest } from './dto/get-airline-services.request';
 import { GetAirlineServicesResponse } from './dto/get-airline-services.response';
 import { GetAirlineRequest } from './dto/get-airline.request';
+import { GetAirlineResponse } from './dto/get-airline.response';
 import { GetAirlinesResponse } from './dto/get-airlines.response';
 import { PatchAirlineReviewRequest } from './dto/patch-airline-review.request';
 import { PostAirlineReviewReportRequest } from './dto/post-airline-review-report.request';
@@ -195,6 +196,7 @@ export class AirlineController {
   @ApiResponse({
     status: 2000,
     description: 'jwt 검증 실패',
+    type: GetAirlineResponse,
   })
   @ApiResponse({
     status: 2028,

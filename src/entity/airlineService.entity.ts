@@ -11,8 +11,8 @@ export class AirlineService {
   @Column({ length: 45 })
   name: string;
 
-  @Column({ length: 15 })
-  customerServiceNumber: string;
+  @Column()
+  website: string;
 
   @Column({ length: 10, default: 'ACTIVE' })
   status: string;

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsObject, IsString } from 'class-validator';
 import { BaseResponse } from 'config/base.response';
 
-class AirlineServicesInfo {
+class AirlineServiceInfo {
   @ApiProperty({
     example: 1,
     description: '항공사 서비스 아이디',
@@ -16,6 +16,13 @@ class AirlineServicesInfo {
   })
   @IsString()
   name: string;
+
+  @ApiProperty({
+    example: 'https://flyasiana.com/C/KR/KO/contents/disabled-passenger',
+    description: '항공사 서비스 웹사이트',
+  })
+  @IsString()
+  website: string;
 }
 
 class AirlineDetailInfo {
@@ -64,36 +71,48 @@ class AirlineDetailInfo {
   @ApiProperty({
     example: [
       {
-        id: 1,
-        name: '한가족 서비스',
+        id: 7,
+        name: '장애인 고객',
+        website: 'https://flyasiana.com/C/KR/KO/contents/disabled-passenger',
       },
       {
-        id: 2,
-        name: '유아 동반 승객',
+        id: 8,
+        name: '고령자 고객',
+        website: 'https://flyasiana.com/C/KR/KO/contents/elderly-passenger',
       },
       {
-        id: 3,
-        name: '혼자 여행하는 어린이',
+        id: 9,
+        name: '임신부 고객',
+        website: 'https://flyasiana.com/C/KR/KO/contents/pregnant-passenger',
       },
       {
-        id: 4,
-        name: '몸이 불편한 승객',
+        id: 10,
+        name: '유/소아 동반 고객',
+        website: 'https://flyasiana.com/C/KR/KO/contents/traveling-with-minors',
       },
       {
-        id: 5,
-        name: '임신중인 승객',
+        id: 11,
+        name: '혼자 여행하는 어린이/청소년',
+        website: 'https://flyasiana.com/C/KR/KO/contents/unaccompanied-minor',
       },
       {
-        id: 6,
-        name: '반려동물 동반 승객',
+        id: 12,
+        name: '반려동물 동반',
+        website: 'https://flyasiana.com/C/KR/KO/contents/traveling-with-pets',
+      },
+      {
+        id: 13,
+        name: '의료도움이 필요한 고객',
+        website:
+          'https://flyasiana.com/C/KR/KO/contents/medical-assistance-guide',
       },
     ],
     description: '항공사 서비스 리스트',
-    type: AirlineServicesInfo,
+    type: AirlineServiceInfo,
     isArray: true,
   })
   @IsArray()
-  airlineServices: Array<AirlineServicesInfo>;
+  airlineServices: Array<AirlineServiceInfo>;
 }
 
 class GetAirlineResultData {
@@ -107,28 +126,41 @@ class GetAirlineResultData {
       availableAt: '매일 07:00 - 22:00',
       airlineServices: [
         {
-          id: 1,
-          name: '한가족 서비스',
+          id: 7,
+          name: '장애인 고객',
+          website: 'https://flyasiana.com/C/KR/KO/contents/disabled-passenger',
         },
         {
-          id: 2,
-          name: '유아 동반 승객',
+          id: 8,
+          name: '고령자 고객',
+          website: 'https://flyasiana.com/C/KR/KO/contents/elderly-passenger',
         },
         {
-          id: 3,
-          name: '혼자 여행하는 어린이',
+          id: 9,
+          name: '임신부 고객',
+          website: 'https://flyasiana.com/C/KR/KO/contents/pregnant-passenger',
         },
         {
-          id: 4,
-          name: '몸이 불편한 승객',
+          id: 10,
+          name: '유/소아 동반 고객',
+          website:
+            'https://flyasiana.com/C/KR/KO/contents/traveling-with-minors',
         },
         {
-          id: 5,
-          name: '임신중인 승객',
+          id: 11,
+          name: '혼자 여행하는 어린이/청소년',
+          website: 'https://flyasiana.com/C/KR/KO/contents/unaccompanied-minor',
         },
         {
-          id: 6,
-          name: '반려동물 동반 승객',
+          id: 12,
+          name: '반려동물 동반',
+          website: 'https://flyasiana.com/C/KR/KO/contents/traveling-with-pets',
+        },
+        {
+          id: 13,
+          name: '의료도움이 필요한 고객',
+          website:
+            'https://flyasiana.com/C/KR/KO/contents/medical-assistance-guide',
         },
       ],
     },

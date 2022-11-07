@@ -106,7 +106,7 @@ export class AirlineService {
 
       // 항공사 서비스 조회
       const airlineServices = await this.airlineServiceRepository.find({
-        select: ['id', 'name'],
+        select: ['id', 'name', 'website'],
         where: {
           airlineId: getAirlineRequest.airlineId,
           status: Status.ACTIVE,
