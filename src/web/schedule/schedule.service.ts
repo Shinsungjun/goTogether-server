@@ -242,6 +242,7 @@ export class ScheduleService {
           .groupBy('Schedule.id')
           .where('Schedule.userId = (:userId)', { userId: userId })
           .andWhere('TIMESTAMPDIFF(DAY, now(), Schedule.startAt) <= -1')
+          .andWhere('Schedule.status = (:status)', { status: Status.ACTIVE })
           .getMany();
 
         // 존재하는 페이지인지 검증
