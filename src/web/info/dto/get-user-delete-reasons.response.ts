@@ -17,7 +17,7 @@ class UserDeleteReason {
   name: string;
 }
 
-class GetUserDeleteReasonResultData {
+class GetUserDeleteReasonsResultData {
   @ApiProperty({
     example: [
       {
@@ -54,5 +54,5 @@ export abstract class GetUserDeleteReasonsResponse extends BaseResponse {
     description: 'result 객체',
   })
   @IsObject()
-  result: GetUserDeleteReasonResultData;
+  result: GetUserDeleteReasonsResultData;
 }
