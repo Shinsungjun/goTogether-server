@@ -36,7 +36,7 @@ export class InfoController {
     required: true,
   })
   @UseGuards(JwtAuthGuard)
-  @Get('/userdeletereasons')
+  @Get('/user-delete-reasons')
   async getUserDeleteReasons() {
     return await this.infoService.retrieveUserDeleteReasons();
   }
@@ -67,7 +67,7 @@ export class InfoController {
     required: true,
   })
   @UseGuards(JwtAuthGuard)
-  @Get('/reviewreportreasons')
+  @Get('/review-report-reasons')
   async getReviewReportReasons() {
     return await this.infoService.retrieveReviewReportReasons();
   }
