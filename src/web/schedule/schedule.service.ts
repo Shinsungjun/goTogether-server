@@ -644,9 +644,7 @@ export class ScheduleService {
             homeSchedule.scheduleId,
           ),
         );
-        homeSchedule['departureAirportService'] = departureAirportService.map(
-          (x) => x.name,
-        );
+        homeSchedule['departureAirportService'] = departureAirportService;
 
         const arrivalAirportService = await queryRunner.query(
           this.scheduleQuery.retrieveScheduleAirportService(
@@ -654,16 +652,13 @@ export class ScheduleService {
             homeSchedule.scheduleId,
           ),
         );
-        homeSchedule['arrivalAirportService'] = arrivalAirportService.map(
-          (x) => x.name,
-        );
-
+        homeSchedule['arrivalAirportService'] = arrivalAirportService;
         const airlineService = await queryRunner.query(
           this.scheduleQuery.retrieveScheduleAirlineService(
             homeSchedule.scheduleId,
           ),
         );
-        homeSchedule['airlineService'] = airlineService.map((x) => x.name);
+        homeSchedule['airlineService'] = airlineService;
       }
 
       const data = {

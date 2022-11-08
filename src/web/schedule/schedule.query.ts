@@ -109,7 +109,8 @@ export class ScheduleQuery {
   ): string => {
     return `
       SELECT AirportService.id as airportServiceId,
-            AirportService.name
+            AirportService.name,
+            AirportService.website
       FROM ScheduleAirportService
               join AirportService on AirportService.id = ScheduleAirportService.airportServiceId
       WHERE ScheduleAirportService.scheduleId = ${scheduleId}
@@ -121,7 +122,8 @@ export class ScheduleQuery {
   retrieveScheduleAirlineService = (scheduleId: number): string => {
     return `
         SELECT AirlineService.id as airlineServiceId, 
-              AirlineService.name
+              AirlineService.name,
+              AirlineService.website
         FROM ScheduleAirlineService
                 join AirlineService on AirlineService.id = ScheduleAirlineService.airlineServiceId
         WHERE ScheduleAirlineService.scheduleId = ${scheduleId}
