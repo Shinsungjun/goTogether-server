@@ -25,6 +25,13 @@ class SignInResultData {
   phoneNumber: string;
 
   @ApiProperty({
+    example: 'harry7231',
+    description: '유저 아이디',
+  })
+  @IsString()
+  userName: string;
+
+  @ApiProperty({
     example: 'asdasaonfoanfnalsndlkasndklans',
     description: 'jwt',
   })

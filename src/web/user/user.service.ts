@@ -73,6 +73,7 @@ export class UserService {
         userId: createUserData.id,
         nickName: createUserData.nickName,
         phoneNumber: createUserData.phoneNumber,
+        userName: createUserData.userName,
       };
 
       const token = this.jwtService.sign(payload);
@@ -81,6 +82,7 @@ export class UserService {
         createUserId: createUserData.id,
         nickName: createUserData.nickName,
         phoneNumber: createUserData.phoneNumber,
+        userName: createUserData.userName,
         jwt: token,
       };
 

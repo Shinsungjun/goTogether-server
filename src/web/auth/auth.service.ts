@@ -199,6 +199,7 @@ export class AuthService {
         userId: user.id,
         nickName: user.nickName,
         phoneNumber: user.phoneNumber,
+        userName: user.userName,
       };
       const token = this.jwtSerivce.sign(payload);
 
@@ -206,6 +207,7 @@ export class AuthService {
         userId: user.id,
         nickName: user.nickName,
         phoneNumber: user.phoneNumber,
+        userName: user.userName,
         jwt: token,
       };
 
