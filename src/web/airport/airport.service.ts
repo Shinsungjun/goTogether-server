@@ -170,7 +170,7 @@ export class AirportService {
       }
 
       // 페이징
-      const pageSize = 5;
+      const pageSize = 10;
       const offset: number = pageSize * (getAirportReviewsRequest.page - 1);
       const total = await queryRunner.query(
         this.airportQuery.retrieveTotalAirportReviewsQuery(

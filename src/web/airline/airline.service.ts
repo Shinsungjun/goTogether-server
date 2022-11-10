@@ -159,7 +159,7 @@ export class AirlineService {
       }
 
       // 페이징
-      const pageSize = 5;
+      const pageSize = 10;
       const offset: number = pageSize * (getAirlineReviewsRequest.page - 1);
       const total = await queryRunner.query(
         this.airlineQuery.retrieveTotalAirlineReviewsQuery(

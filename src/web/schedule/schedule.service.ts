@@ -233,7 +233,7 @@ export class ScheduleService {
           schedules: schedules,
         };
       } else if (getSchedulesRequest.type == 'past') {
-        const pageSize = 5;
+        const pageSize = 10;
         const offset: number = pageSize * (getSchedulesRequest.page - 1);
         // 총 개수
         const total = await this.scheduleRepository
