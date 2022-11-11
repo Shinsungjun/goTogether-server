@@ -294,6 +294,7 @@ export class AirlineController {
     description: '항공사 서비스 아이디 (필터링 용)',
     name: 'airlineServiceId',
     type: 'number',
+    required: false,
   })
   @UseGuards(JwtAuthGuard)
   @Get('/:airlineId/reviews')
