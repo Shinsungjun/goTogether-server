@@ -52,8 +52,6 @@
 │   ├── secret.ts                                                 # 시크릿 키
 │   ├── message.ts                                                # 메세지 발송 관련 파일
 │   ├── swagger.ts                                                # swagger 설정 관련 파일
-├── dist                   	                                    # dist 폴더
-├── node_modules                   	                            # 노드 모듈
 ├── src                                                           # 소스 코드 폴더
 │   ├── entity                                                    # 데이터베이스 스키마관련 코드
 │   ├── web                                                       # 웹 api 관련 폴더
