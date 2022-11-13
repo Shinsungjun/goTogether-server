@@ -1,9 +1,13 @@
-name: gaonnuri CI/CD
+name: goTogether CI/CD
 
 on:
   push:
     branches:
       - dev # 브랜치 이름
+  pull_request:
+    branches:
+      - dev
+      - main
   workflow_dispatch: # 수동 실행
 
 jobs:
@@ -45,8 +49,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: gaonnuri
-          environment_name: Gaonnuri-env
+          application_name: goTogether
+          environment_name: Gotogether-env-1
           version_label: github-action-${{steps.current-time.outputs.formattedTime}}
           region: ap-northeast-2
           deployment_package: deploy.zip

@@ -6,6 +6,7 @@
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
 # 가치가자 웹 API 서버에 오신것을 환영합니다 👋
+=======
 
 ### 🏠 [API 문서 주소](https://dev.jj-gotogether.shop/api-docs/)
 
@@ -59,7 +60,7 @@
 │   │   |   ├── dto                                               # request, response 정리 폴더
 │   │   |   ├── jwt                                               # jwt 관련 폴더
 |   │   │   |   ├── jwt.guard.ts                                  # Auth Guard 클래스 파일
-|   │   │   |   ├── jwt.payload.ts                                # payload 클래스 파일 
+|   │   │   |   ├── jwt.payload.ts                                # payload 클래스 파일
 |   │   │   |   ├── jwt.strategy.ts                               # 로그인 검증 로직 관련 파일
 │   │   |   ├── auth.controller.spec.ts                           # auth controller 테스트 파일
 │   │   |   ├── auth.controller.ts                                # auth controller 파일
