@@ -6,13 +6,12 @@
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
 # 가치가자 웹 API 서버에 오신것을 환영합니다 👋
+=======
 
 ### 🏠 [API 문서 주소](https://dev.jj-gotogether.shop/api-docs/)
 
 ## Environment
-
----
-
+***
 - npm = 7.21.0
 - node = v16.8.0
 
@@ -26,11 +25,9 @@
 - Ex. Auth 도메인(폴더)안에는 auth.module.ts / auth.controller.ts / auth.service.ts 파일과 각 테스트 파일이 존재합니다.
 
 1. Module
-
    - NestJS는 모듈로 구성, 각 도메인마다 Module을 생성한 다음 app.module.ts에 각 도메인별 모듈을 작성
 
 2. Controller
-
    - Route로부터 받은 요청속의 데이터(path-variable, query-string, body 등)를 받은 뒤, Service에게 해당 데이터를 넘겨주고 비즈니스 로직을 수행
 
 3. Service
