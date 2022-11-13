@@ -124,43 +124,43 @@ export const PatchSchedule = createParamDecorator(
     const patchScheduleData = ctx.switchToHttp().getRequest().body;
 
     if (!patchScheduleData.scheduleId) {
-      throw new HttpException(response.SCHEDULE_ID_EMPTY, 201);
+      throw new HttpException(response.SCHEDULE_ID_EMPTY, 200);
     }
     if (patchScheduleData.scheduleId <= 0) {
-      throw new HttpException(response.INVALID_SCHEDULE_ID, 201);
+      throw new HttpException(response.INVALID_SCHEDULE_ID, 200);
     }
     if (!patchScheduleData.startAt) {
-      throw new HttpException(response.START_AT_EMPTY, 201);
+      throw new HttpException(response.START_AT_EMPTY, 200);
     }
     if (!regularExp.dateRegex.test(patchScheduleData.startAt)) {
-      throw new HttpException(response.INVALID_DATE_FORMAT, 201);
+      throw new HttpException(response.INVALID_DATE_FORMAT, 200);
     }
     if (!patchScheduleData.departureAirportId) {
-      throw new HttpException(response.DEPARTURE_AIRPORT_ID_EMPTY, 201);
+      throw new HttpException(response.DEPARTURE_AIRPORT_ID_EMPTY, 200);
     }
     if (patchScheduleData.departureAirportId <= 0) {
-      throw new HttpException(response.INVALID_AIRPORT_ID, 201);
+      throw new HttpException(response.INVALID_AIRPORT_ID, 200);
     }
     if (!patchScheduleData.arrivalAirportId) {
-      throw new HttpException(response.ARRIVAL_AIRPORT_ID_EMPTY, 201);
+      throw new HttpException(response.ARRIVAL_AIRPORT_ID_EMPTY, 200);
     }
     if (patchScheduleData.arrivalAirportId <= 0) {
-      throw new HttpException(response.INVALID_AIRPORT_ID, 201);
+      throw new HttpException(response.INVALID_AIRPORT_ID, 200);
     }
     if (!patchScheduleData.airlineId) {
-      throw new HttpException(response.AIRLINE_ID_EMPTY, 201);
+      throw new HttpException(response.AIRLINE_ID_EMPTY, 200);
     }
     if (patchScheduleData.airlineId <= 0) {
-      throw new HttpException(response.INVALID_AIRLINE_ID, 201);
+      throw new HttpException(response.INVALID_AIRLINE_ID, 200);
     }
     if (!patchScheduleData.departureAirportServiceIds) {
-      throw new HttpException(response.DEPARTURE_AIRPORT_ID_EMPTY, 201);
+      throw new HttpException(response.DEPARTURE_AIRPORT_ID_EMPTY, 200);
     }
     if (!patchScheduleData.arrivalAirportServiceIds) {
-      throw new HttpException(response.ARRIVAL_AIRPORT_SERVICE_IDS_EMPTY, 201);
+      throw new HttpException(response.ARRIVAL_AIRPORT_SERVICE_IDS_EMPTY, 200);
     }
     if (!patchScheduleData.airlineServiceIds) {
-      throw new HttpException(response.AIRLINE_SERVICE_IDS_EMPTY, 201);
+      throw new HttpException(response.AIRLINE_SERVICE_IDS_EMPTY, 200);
     }
 
     return patchScheduleData;

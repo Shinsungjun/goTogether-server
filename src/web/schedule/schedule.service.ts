@@ -8,7 +8,6 @@ import { DataSource, Repository } from 'typeorm';
 import { Airline } from 'src/entity/airline.entity';
 import {
   AirportServiceType,
-  GetSchedulesType,
   ReviewStatus,
   Status,
 } from 'common/variable.utils';
@@ -39,10 +38,6 @@ export class ScheduleService {
     private airportSerivceRepository: Repository<AirportService>,
     @InjectRepository(AirlineService)
     private airlineSerivceRepository: Repository<AirlineService>,
-    @InjectRepository(ScheduleAirlineService)
-    private scheduleAirlineRepository: Repository<ScheduleAirlineService>,
-    @InjectRepository(ScheduleAirportService)
-    private scheduleAirportRepository: Repository<ScheduleAirportService>,
     @InjectRepository(AirportReview)
     private airportReviewRepository: Repository<AirportReview>,
     @InjectRepository(AirlineReview)
@@ -53,6 +48,8 @@ export class ScheduleService {
     private scheduleQuery: ScheduleQuery,
     private connection: DataSource,
   ) {}
+
+  // 일정 등록
   async createSchedule(postScheduleRequest: PostScheduleRequest) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -119,6 +116,7 @@ export class ScheduleService {
           AirportServiceType.DEPARTURE;
         await queryRunner.manager.save(departureScheduleAirportServiceRegister);
       }
+
       // 도착 서비스
       for (const arrivalAirportServiceId of postScheduleRequest.arrivalAirportServiceIds) {
         // 존재하는 서비스인지 확인
@@ -139,6 +137,7 @@ export class ScheduleService {
         arrivalScheduleAirportServiceRegister.type = AirportServiceType.ARRIVAL;
         await queryRunner.manager.save(arrivalScheduleAirportServiceRegister);
       }
+
       // 항공사 서비스
       for (const airlineServiceId of postScheduleRequest.airlineServiceIds) {
         // 존재하는 서비스인지 확인
@@ -158,28 +157,29 @@ export class ScheduleService {
         await queryRunner.manager.save(scheduleAirlineServiceRegister);
       }
 
-      let departureAirportService = await queryRunner.query(
-        this.scheduleQuery.retrieveScheduleAirportService(
+      // 출발 공항 서비스 리스트 조회
+      let departureAirportServices = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportServices(
           AirportServiceType.DEPARTURE,
           createdSchedule.id,
         ),
       );
-      departureAirportService = departureAirportService.map((x) => x.name);
+      departureAirportServices = departureAirportServices.map((x) => x.name);
 
-      let arrivalAirportService = await queryRunner.query(
-        this.scheduleQuery.retrieveScheduleAirportService(
+      // 도착 공항 서비스 리스트 조회
+      let arrivalAirportServices = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportServices(
           AirportServiceType.ARRIVAL,
           createdSchedule.id,
         ),
       );
-      arrivalAirportService = arrivalAirportService.map((x) => x.name);
+      arrivalAirportServices = arrivalAirportServices.map((x) => x.name);
 
-      let airlineService = await queryRunner.query(
-        this.scheduleQuery.retrieveScheduleAirlineService(createdSchedule.id),
+      // 항공사 서비스 리스트 조회
+      let airlineServices = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirlineServices(createdSchedule.id),
       );
-      airlineService = airlineService.map((x) => x.name);
-
-      const scheduleStartAt = new Date(postScheduleRequest.startAt);
+      airlineServices = airlineServices.map((x) => x.name);
 
       const createdScheduleInfo = {
         scheduleId: createdSchedule.id,
@@ -193,9 +193,9 @@ export class ScheduleService {
         departureAirportName: departureAirport.name,
         arrivalAiportName: arrivalAirport.name,
         airlineName: airline.name,
-        departureAirportService: departureAirportService,
-        arrivalAirportService: arrivalAirportService,
-        airlineService: airlineService,
+        departureAirportService: departureAirportServices,
+        arrivalAirportService: arrivalAirportServices,
+        airlineService: airlineServices,
       };
 
       const data = {
@@ -215,6 +215,7 @@ export class ScheduleService {
     }
   }
 
+  // 일정 리스트 조회
   async retrieveSchedules(
     userId: number,
     getSchedulesRequest: GetSchedulesRequest,
@@ -224,7 +225,7 @@ export class ScheduleService {
     try {
       let schedules;
       let data;
-      // 등록된 일정
+      // 등록된 일정 리스트 조회
       if (getSchedulesRequest.type == 'future') {
         schedules = await queryRunner.query(
           this.scheduleQuery.retrieveFutureSchedulesQuery(userId),
@@ -233,6 +234,9 @@ export class ScheduleService {
           schedules: schedules,
         };
       } else if (getSchedulesRequest.type == 'past') {
+        // 지난 일정 리스트 조회
+
+        // 페이징
         const pageSize = 10;
         const offset: number = pageSize * (getSchedulesRequest.page - 1);
         // 총 개수
@@ -347,45 +351,48 @@ export class ScheduleService {
     }
   }
 
+  // 일정 상세 조회
   async retrieveSchedule(getScheduleRequest: GetScheduleRequest) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     try {
+      // 일정 조회
       let [schedule] = await queryRunner.query(
         this.scheduleQuery.retrieveScheduleQuery(getScheduleRequest.scheduleId),
       );
-
       if (!schedule) {
         return response.NON_EXIST_SCHEDULE;
       }
 
-      // 출발 공항의 선택된 서비스 조회
-      const departureAirportService = await queryRunner.query(
-        this.scheduleQuery.retrieveScheduleAirportService(
+      // 출발 공항의 선택된 서비스 리스트 조회
+      const departureAirportServices = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportServices(
           AirportServiceType.DEPARTURE,
           getScheduleRequest.scheduleId,
         ),
       );
-      schedule['departureAirportService'] = departureAirportService.map(
+      schedule['departureAirportService'] = departureAirportServices.map(
         (x) => x.name,
       );
 
-      const arrivalAirportService = await queryRunner.query(
-        this.scheduleQuery.retrieveScheduleAirportService(
+      // 도착 공항의 선택된 서비스 리스트 조회
+      const arrivalAirportServices = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirportServices(
           AirportServiceType.ARRIVAL,
           getScheduleRequest.scheduleId,
         ),
       );
-      schedule['arrivalAirportService'] = arrivalAirportService.map(
+      schedule['arrivalAirportService'] = arrivalAirportServices.map(
         (x) => x.name,
       );
 
-      const airlineService = await queryRunner.query(
-        this.scheduleQuery.retrieveScheduleAirlineService(
+      // 항공사의 선택된 서비스 리스트 조회
+      const airlineServices = await queryRunner.query(
+        this.scheduleQuery.retrieveScheduleAirlineServices(
           getScheduleRequest.scheduleId,
         ),
       );
-      schedule['airlineService'] = airlineService.map((x) => x.name);
+      schedule['airlineService'] = airlineServices.map((x) => x.name);
 
       const data = {
         schedule: schedule,
@@ -400,6 +407,7 @@ export class ScheduleService {
     }
   }
 
+  // 일정 수정
   async editSchedule(
     userId: Number,
     patchScheduleRequest: PatchScheduleRequest,
@@ -441,7 +449,8 @@ export class ScheduleService {
       await queryRunner.manager.delete(ScheduleAirlineService, {
         scheduleId: patchScheduleRequest.scheduleId,
       });
-      // 출발 서비스
+
+      // create schedule departure airport serivces
       for (const departureAirportServiceId of patchScheduleRequest.departureAirportServiceIds) {
         // 존재하는 서비스인지 확인
         if (
@@ -463,7 +472,8 @@ export class ScheduleService {
           AirportServiceType.DEPARTURE;
         await queryRunner.manager.save(departureScheduleAirportServiceRegister);
       }
-      // 도착 서비스
+
+      // create schedule arrival airport serivces
       for (const arrivalAirportServiceId of patchScheduleRequest.arrivalAirportServiceIds) {
         // 존재하는 서비스인지 확인
         if (
@@ -484,7 +494,8 @@ export class ScheduleService {
         arrivalScheduleAirportServiceRegister.type = AirportServiceType.ARRIVAL;
         await queryRunner.manager.save(arrivalScheduleAirportServiceRegister);
       }
-      // 항공사 서비스
+
+      // create schedule airline serivces
       for (const airlineServiceId of patchScheduleRequest.airlineServiceIds) {
         // 존재하는 서비스인지 확인
         if (
@@ -517,6 +528,7 @@ export class ScheduleService {
     }
   }
 
+  // 일정 리뷰 리스트 조회
   async retrieveScheduleReviews(
     userId: number,
     getScheduleReviewsRequest: GetScheduleReviewsRequest,
@@ -538,18 +550,21 @@ export class ScheduleService {
         return response.SCHEDULE_USER_PERMISSION_DENIED;
       }
 
+      // 일정 출발 공항 조회
       let [departureAirport] = await queryRunner.query(
         this.scheduleQuery.retrieveScheduleDepartureAirport(
           getScheduleReviewsRequest.scheduleId,
         ),
       );
+      // 출발 공항 서비스 리스트 조회
       const departureAirportServices = await queryRunner.query(
-        this.scheduleQuery.retrieveScheduleAirportService(
+        this.scheduleQuery.retrieveScheduleAirportServices(
           AirportServiceType.DEPARTURE,
           getScheduleReviewsRequest.scheduleId,
         ),
       );
       departureAirport['airportServices'] = departureAirportServices;
+      // 리뷰 작성 상태 조회
       if (
         await this.airportReviewRepository.findOneBy({
           airportId: departureAirport.airportId,
@@ -563,18 +578,21 @@ export class ScheduleService {
         departureAirport['reviewStatus'] = ReviewStatus.BEFORE;
       }
 
+      // 일정 도착 공항 조회
       let [arrivalAirport] = await queryRunner.query(
         this.scheduleQuery.retrieveScheduleArrivalAirport(
           getScheduleReviewsRequest.scheduleId,
         ),
       );
+      // 도착 공항 서비스 리스트 조회
       const arrivalAirportServices = await queryRunner.query(
-        this.scheduleQuery.retrieveScheduleAirportService(
+        this.scheduleQuery.retrieveScheduleAirportServices(
           AirportServiceType.ARRIVAL,
           getScheduleReviewsRequest.scheduleId,
         ),
       );
       arrivalAirport['airportServices'] = arrivalAirportServices;
+      // 리뷰 작성 상태 조회
       if (
         await this.airportReviewRepository.findOneBy({
           airportId: arrivalAirport.airportId,
@@ -588,17 +606,20 @@ export class ScheduleService {
         arrivalAirport['reviewStatus'] = ReviewStatus.BEFORE;
       }
 
+      // 일정 항공사 조회
       let [airline] = await queryRunner.query(
         this.scheduleQuery.retrieveScheduleAirline(
           getScheduleReviewsRequest.scheduleId,
         ),
       );
+      // 항공사 서비스 리스트 조회
       const airlineServices = await queryRunner.query(
-        this.scheduleQuery.retrieveScheduleAirlineService(
+        this.scheduleQuery.retrieveScheduleAirlineServices(
           getScheduleReviewsRequest.scheduleId,
         ),
       );
       airline['airlineServices'] = airlineServices;
+      // 리뷰 작성 상태 조회
       if (
         await this.airlineReviewRepository.findOneBy({
           airlineId: airline.airlineId,
@@ -632,33 +653,34 @@ export class ScheduleService {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     try {
+      // 홍화면 일정 조회
       let [homeSchedule] = await queryRunner.query(
         this.scheduleQuery.retrieveHomeSchedule(userId),
       );
 
       if (homeSchedule) {
         // 출발 공항의 선택된 서비스 조회
-        const departureAirportService = await queryRunner.query(
-          this.scheduleQuery.retrieveScheduleAirportService(
+        const departureAirportServices = await queryRunner.query(
+          this.scheduleQuery.retrieveScheduleAirportServices(
             AirportServiceType.DEPARTURE,
             homeSchedule.scheduleId,
           ),
         );
-        homeSchedule['departureAirportService'] = departureAirportService;
+        homeSchedule['departureAirportService'] = departureAirportServices;
 
-        const arrivalAirportService = await queryRunner.query(
-          this.scheduleQuery.retrieveScheduleAirportService(
+        const arrivalAirportServices = await queryRunner.query(
+          this.scheduleQuery.retrieveScheduleAirportServices(
             AirportServiceType.ARRIVAL,
             homeSchedule.scheduleId,
           ),
         );
-        homeSchedule['arrivalAirportService'] = arrivalAirportService;
-        const airlineService = await queryRunner.query(
-          this.scheduleQuery.retrieveScheduleAirlineService(
+        homeSchedule['arrivalAirportService'] = arrivalAirportServices;
+        const airlineServices = await queryRunner.query(
+          this.scheduleQuery.retrieveScheduleAirlineServices(
             homeSchedule.scheduleId,
           ),
         );
-        homeSchedule['airlineService'] = airlineService;
+        homeSchedule['airlineService'] = airlineServices;
       }
 
       const data = {

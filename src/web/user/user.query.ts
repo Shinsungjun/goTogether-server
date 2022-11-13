@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserQuery {
+  // 유저 항공사 리뷰 조회 쿼리
   retrieveUserAirlineReviewsQuery = (userId: number): string => {
     return `
       SELECT AirlineReview.id,
@@ -22,6 +23,7 @@ export class UserQuery {
     `;
   };
 
+  // 유저 공항 리뷰 조회 쿼리
   retrieveUserAirportReviewsQuery = (userId: number): string => {
     return `
       SELECT AirportReview.id,
@@ -42,6 +44,7 @@ export class UserQuery {
     `;
   };
 
+  // 7일 이내에 탈퇴한 계정인지 확인
   retrieveDeletedUserByPhoneNumber = (phoneNumber: string) => {
     return `
       SELECT User.id

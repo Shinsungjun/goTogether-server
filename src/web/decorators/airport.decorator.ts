@@ -107,10 +107,10 @@ export const PatchAirportReview = createParamDecorator(
       throw new HttpException(response.INVALID_REVIEWID, 200);
     }
     if (!patchAirportReviewData.content) {
-      throw new HttpException(response.REVIEW_CONTENT_EMPTY, 201);
+      throw new HttpException(response.REVIEW_CONTENT_EMPTY, 200);
     }
     if (patchAirportReviewData.content.length > 200) {
-      throw new HttpException(response.INVALID_REVIEW_CONTENT, 201);
+      throw new HttpException(response.INVALID_REVIEW_CONTENT, 200);
     }
 
     return patchAirportReviewData;

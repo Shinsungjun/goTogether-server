@@ -16,7 +16,6 @@ import { GetUserReviewsRequest } from './dto/get-user-reviews.request';
 import { UserQuery } from './user.query';
 import { AirlineQuery } from '../airline/airline.query';
 import { AirportQuery } from '../airport/airport.query';
-import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UserService {

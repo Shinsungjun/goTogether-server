@@ -12,6 +12,7 @@ export class SearchService {
     private connection: DataSource,
   ) {}
 
+  // 공항, 항공사 검색
   async retrieveAirportAirlineSearch(
     getAirportAirlineSearchRequest: GetAirportAirlineSearchRequest,
   ) {
@@ -25,6 +26,7 @@ export class SearchService {
         '%',
       );
 
+      // 검색어 생성
       let airportIndex = searchQuery.indexOf('공항');
       if (airportIndex == -1) {
         let airlineIndex = searchQuery.indexOf('항공');
@@ -54,17 +56,20 @@ export class SearchService {
             searchQuery.slice(airportIndex + 2);
         }
       }
-      const airportSearchResult = await queryRunner.query(
+
+      // 공항 검색
+      const airportSearchResults = await queryRunner.query(
         this.searchQuery.retrieveAirportSearch(searchQuery),
       );
-      const airlineSearchResult = await queryRunner.query(
+      // 항공사 검색
+      const airlineSearchResults = await queryRunner.query(
         this.searchQuery.retrieveAirlineSearch(searchQuery),
       );
 
-      const searchResult = [...airportSearchResult, ...airlineSearchResult];
+      const searchResults = [...airportSearchResults, ...airlineSearchResults];
 
       const data = {
-        searchResult: searchResult,
+        searchResult: searchResults,
       };
 
       const result = makeResponse(response.SUCCESS, data);

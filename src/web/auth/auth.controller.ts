@@ -458,6 +458,10 @@ export class AuthController {
     description: '존재하는 전화번호입니다.',
   })
   @ApiResponse({
+    status: 2014,
+    description: '존재하지 않는 유저입니다.',
+  })
+  @ApiResponse({
     status: 4000,
     description: '서버 에러',
   })

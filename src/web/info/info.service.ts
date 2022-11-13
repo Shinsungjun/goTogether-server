@@ -17,6 +17,7 @@ export class InfoService {
     private readonly reviewReportReasonRepository: Repository<ReviewReportReason>,
   ) {}
 
+  // 탈퇴 사유 리스트 조회
   async retrieveUserDeleteReasons() {
     try {
       const userDeleteReasons = await this.userDeleteReasonRepository.find({
@@ -38,6 +39,7 @@ export class InfoService {
     }
   }
 
+  // 리뷰 신고 사유 리스트 조회
   async retrieveReviewReportReasons() {
     try {
       const reviewReportReasons = await this.reviewReportReasonRepository.find({
@@ -55,7 +57,6 @@ export class InfoService {
 
       return result;
     } catch (error) {
-      console.log(error.message);
       return response.ERROR;
     }
   }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AirportQuery {
+  // 공항 상세 조회
   retrieveAirportQuery = (airportId: number): string => {
     return `
       SELECT Airport.id   as airportId,
@@ -21,6 +22,7 @@ export class AirportQuery {
     `;
   };
 
+  // 전체 공항 리뷰 리스트 조회
   retrieveTotalAirportReviewsQuery = (
     airportId: number,
     filterQuery: string,
@@ -41,6 +43,7 @@ export class AirportQuery {
     `;
   };
 
+  // 공항 리뷰 리스트 조회 (페이징)
   retrieveAirportReviewsQuery = (
     airportId: number,
     offset: number,
@@ -64,6 +67,7 @@ export class AirportQuery {
     `;
   };
 
+  // 리뷰한 서비스 리스트 조회
   retrieveAirportReviewedServicesQuery = (airportReviewId: number): string => {
     return `
       SELECT AirportService.name
@@ -74,6 +78,8 @@ export class AirportQuery {
       group by AirportService.name;
     `;
   };
+
+  // 공항 리뷰 작성 시간 조회
   retrieveAirportReviewTimeQuery = (airportReviewId: number): string => {
     return `
       SELECT AirportReview.id
@@ -84,6 +90,7 @@ export class AirportQuery {
     `;
   };
 
+  // 공항 리뷰 삭제 가능 시간 조회
   retrieveAirportReviewDeleteTimeQuery = (airportReviewId: number): string => {
     return `
       SELECT AirportReview.id

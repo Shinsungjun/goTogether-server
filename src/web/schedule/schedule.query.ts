@@ -103,7 +103,7 @@ export class ScheduleQuery {
     `;
   };
 
-  retrieveScheduleAirportService = (
+  retrieveScheduleAirportServices = (
     type: string,
     scheduleId: number,
   ): string => {
@@ -119,7 +119,7 @@ export class ScheduleQuery {
     `;
   };
 
-  retrieveScheduleAirlineService = (scheduleId: number): string => {
+  retrieveScheduleAirlineServices = (scheduleId: number): string => {
     return `
         SELECT AirlineService.id as airlineServiceId, 
               AirlineService.name,

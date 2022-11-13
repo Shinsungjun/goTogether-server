@@ -35,6 +35,7 @@ export class AuthService {
     private authQuery: AuthQuery,
   ) {}
 
+  // 존재하는 유저인지 확인
   async isExistUser(id: number) {
     try {
       // 유저 유무 확인
@@ -55,6 +56,7 @@ export class AuthService {
     }
   }
 
+  // 메세지 발송 시그니처 생성
   private makeSignature() {
     const message = [];
     const hmac = crypto.createHmac('sha256', messageOption.secretKey);
@@ -78,6 +80,7 @@ export class AuthService {
     return { signature: signature.toString(), timestamp: timestamp };
   }
 
+  // 메시지 발송
   async sendSMS(sendSMSRequest: SendSMSRequest) {
     try {
       // 캐시에 있는 키값 초기화
@@ -134,9 +137,10 @@ export class AuthService {
     }
   }
 
+  // 인증번호 확인
   async verifySMS(verifySMSRequest: VerifySMSRequest) {
     try {
-      // 캐시 데이터
+      // 캐시 데이터에서 인증번호 조회
       const originVerifyCode = await this.cacheManager.get(
         verifySMSRequest.phoneNumber,
       );
@@ -156,6 +160,7 @@ export class AuthService {
     }
   }
 
+  // 중복 아이디 확인
   async retrieveDuplicateId(getDuplicateIdRequest: GetDuplicateIdRequest) {
     try {
       // 가입된 아이디인지 확인
@@ -177,6 +182,7 @@ export class AuthService {
     }
   }
 
+  // 로그인
   async signIn(signInRequest: SignInRequest) {
     try {
       const user = await this.userRepository.findOne({
@@ -220,6 +226,7 @@ export class AuthService {
     }
   }
 
+  // 아이디 조회
   async retrieveId(getIdRequest: GetIdRequest) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -256,6 +263,7 @@ export class AuthService {
     }
   }
 
+  // 아이디 전화번호 대조
   async compareIdPhoneNumber(
     compareIdPhoneNumberRequest: CompareIdPhoneNumberRequest,
   ) {
@@ -291,6 +299,7 @@ export class AuthService {
     }
   }
 
+  // 비밀번호 수정
   async editUserPassword(patchUserPasswordRequest: PatchUserPasswordRequest) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -344,17 +353,20 @@ export class AuthService {
     }
   }
 
+  // 중복 전화번호 조회
   async retrieveDuplicatePhoneNumber(
     getDuplicatePhoneNumberRequest: GetDuplicatePhoneNumberRequest,
   ) {
     try {
-      const user = await this.userRepository.findOne({
+      // 전화번호 조회
+      const phoneNumber = await this.userRepository.findOne({
         where: {
           phoneNumber: getDuplicatePhoneNumberRequest.phoneNumber,
+          accountStatus: Status.ACTIVE,
           status: Status.ACTIVE,
         },
       });
-      if (user) {
+      if (phoneNumber) {
         return response.EXIST_PHONENUMBER;
       }
 
@@ -366,15 +378,22 @@ export class AuthService {
     }
   }
 
+  // 비밀번호 조회
   async retrievePassword(
     userId: number,
     getPasswordRequest: GetPasswordRequest,
   ) {
     try {
+      // 존재하는 유저인지 확인
       const user = await this.userRepository.findOneBy({
         id: userId,
+        status: Status.ACTIVE,
       });
+      if (!user) {
+        return response.NON_EXIST_USER;
+      }
 
+      // 비밀번호 대조
       const passwordCheck = await bcrypt.compare(
         getPasswordRequest.password,
         user.password,

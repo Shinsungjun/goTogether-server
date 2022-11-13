@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AirlineQuery {
+  // 항공사 상세 조회
   retrieveAirlineQuery = (airlineId: number): string => {
     return `
       SELECT Airline.id   as airlineId,
@@ -21,6 +22,7 @@ export class AirlineQuery {
     `;
   };
 
+  // 전체 항공사 리뷰 리스트 조회
   retrieveTotalAirlineReviewsQuery = (
     airlineId: number,
     filterQuery: string,
@@ -42,6 +44,7 @@ export class AirlineQuery {
     `;
   };
 
+  // 항공사 리뷰 리스트 조회 (페이징)
   retrieveAirlineReviewsQuery = (
     airlineId: number,
     offset: number,
@@ -66,6 +69,7 @@ export class AirlineQuery {
     `;
   };
 
+  // 리뷰한 서비스 리스트 조회
   retrieveAirlineReviewedServicesQuery = (airlineReviewId: number): string => {
     return `
       SELECT AirlineService.name
@@ -77,6 +81,7 @@ export class AirlineQuery {
     `;
   };
 
+  // 항공사 리뷰 작성 시간 조회
   retrieveAirlineReviewTimeQuery = (airlineReviewId: number): string => {
     return `
       SELECT AirlineReview.id
@@ -87,6 +92,7 @@ export class AirlineQuery {
     `;
   };
 
+  // 항공사 리뷰 삭제 가능 시간 조회
   retrieveAirlineReviewDeleteTimeQuery = (airlineReviewId: number): string => {
     return `
       SELECT AirlineReview.id

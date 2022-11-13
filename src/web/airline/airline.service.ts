@@ -42,6 +42,7 @@ export class AirlineService {
     private connection: DataSource,
   ) {}
 
+  // 항공사 리스트 조회
   async retrieveAirlines() {
     try {
       const airlines = await this.airlineRepository.find({
@@ -63,6 +64,7 @@ export class AirlineService {
     }
   }
 
+  // 항공사 서비스 리스트 조회
   async retrieveAirlineServices(
     getAirlineServicesRequest: GetAirlineServicesRequest,
   ) {
@@ -85,6 +87,7 @@ export class AirlineService {
     }
   }
 
+  // 항공사 상세 조회
   async retrieveAirline(getAirlineRequest: GetAirlineRequest) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -104,7 +107,7 @@ export class AirlineService {
         this.airlineQuery.retrieveAirlineQuery(getAirlineRequest.airlineId),
       );
 
-      // 항공사 서비스 조회
+      // 항공사 서비스 리스트 조회
       const airlineServices = await this.airlineServiceRepository.find({
         select: ['id', 'name', 'website'],
         where: {
@@ -128,6 +131,7 @@ export class AirlineService {
     }
   }
 
+  // 항공사 리뷰 리스트 조회
   async retrieveAirlineReviews(
     getAirlineReviewsRequest: GetAirlineReviewsRequest,
   ) {
@@ -173,6 +177,7 @@ export class AirlineService {
         return response.NON_EXIST_PAGE;
       }
 
+      // 항공사 리뷰 리스트 조회
       let airlineReviews = await queryRunner.query(
         this.airlineQuery.retrieveAirlineReviewsQuery(
           getAirlineReviewsRequest.airlineId,
@@ -182,6 +187,7 @@ export class AirlineService {
         ),
       );
 
+      // 리뷰한 서비스 리스트 조회
       for (let airlineReview of airlineReviews) {
         const airlineReviewedServices = await queryRunner.query(
           this.airlineQuery.retrieveAirlineReviewedServicesQuery(
@@ -208,6 +214,7 @@ export class AirlineService {
     }
   }
 
+  // 항공사 리뷰 작성
   async createAirlineReview(
     postAirlineReviewRequest: PostAirlineReviewRequest,
   ) {
@@ -238,8 +245,10 @@ export class AirlineService {
       airlineReviewRegister.airlineId = postAirlineReviewRequest.airlineId;
       airlineReviewRegister.content = postAirlineReviewRequest.content;
       airlineReviewRegister.score = postAirlineReviewRequest.score;
-      // 존재하는 일정인지 확인
+
+      // 일정에서 리뷰 바로 작성 시
       if (postAirlineReviewRequest.scheduleId) {
+        // 존재하는 일정인지 확인
         let schedule = await queryRunner.manager.findOneBy(Schedule, {
           id: postAirlineReviewRequest.scheduleId,
           status: Status.ACTIVE,
@@ -296,6 +305,7 @@ export class AirlineService {
     }
   }
 
+  // 항공사 리뷰 수정
   async editAirlineReview(
     userId: number,
     patchAirlineReviewRequest: PatchAirlineReviewRequest,
@@ -327,6 +337,7 @@ export class AirlineService {
         return response.REVIEW_EDIT_TIME_ERROR;
       }
 
+      // update airline review
       await this.airlineReviewRepository.update(
         {
           id: patchAirlineReviewRequest.airlineReviewId,
@@ -346,6 +357,7 @@ export class AirlineService {
     }
   }
 
+  // 항공사 리뷰 삭제
   async deleteAirlineReview(
     userId: number,
     deleteAirlineReviewRequest: DeleteAirlineReviewRequest,
@@ -378,6 +390,7 @@ export class AirlineService {
         return response.REVIEW_DELETE_TIME_ERROR;
       }
 
+      // update airline review status
       await queryRunner.manager.update(
         AirlineReview,
         {
@@ -388,6 +401,7 @@ export class AirlineService {
         },
       );
 
+      // updaet airline review service status
       await queryRunner.manager.update(
         ReviewAirlineService,
         {
@@ -410,6 +424,7 @@ export class AirlineService {
     }
   }
 
+  // 항공사 리뷰 신고
   async createAirlineReviewReport(
     userId: number,
     postAirlineReviewReportRequest: PostAirlineReviewReportRequest,
@@ -448,8 +463,6 @@ export class AirlineService {
       await this.airlineReviewReportRepository.save(
         airlineReviewReportRegister,
       );
-
-      // 이후 처리
 
       const result = makeResponse(response.SUCCESS, undefined);
 
