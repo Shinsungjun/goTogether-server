@@ -24,15 +24,13 @@
 - Ex. Auth 도메인(폴더)안에는 auth.module.ts / auth.controller.ts / auth.service.ts 파일과 각 테스트 파일이 존재합니다.
 
 1. Module
-
-   - NestJS는 모듈로 구성이 되어있고, 각 도메인마다 Module을 생성한 다음 app.module.ts에 각 도메인별 모듈을 작성해줘야 한다.
+   - NestJS는 모듈로 구성, 각 도메인마다 Module을 생성한 다음 app.module.ts에 각 도메인별 모듈을 작성
 
 2. Controller
-
-   - Route로부터 받은 요청속의 데이터(path-variable, query-string, body 등)를 받은 뒤, Service에게 해당 데이터를 넘겨주고 비즈니스 로직을 수행하도록 합니다.
+   - Route로부터 받은 요청속의 데이터(path-variable, query-string, body 등)를 받은 뒤, Service에게 해당 데이터를 넘겨주고 비즈니스 로직을 수행
 
 3. Service
-   - 실제 어플리케이션의 핵심적인 비즈니스로직이 수행되는 영역이다. 그리고 여기서는 트랜잭션, 논리적 유효성 검사를 진행합니다.
+   - 실제 어플리케이션의 핵심적인 비즈니스로직이 수행되는 영역, 트랜잭션, 논리적 유효성 검사 진행
 
 ## 폴더 구조
 
