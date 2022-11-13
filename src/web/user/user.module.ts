@@ -8,6 +8,7 @@ import { secret } from 'config/secret';
 import { UserQuery } from './user.query';
 import { AirlineModule } from '../airline/airline.module';
 import { AirportModule } from '../airport/airport.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [

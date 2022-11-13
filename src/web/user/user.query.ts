@@ -41,4 +41,14 @@ export class UserQuery {
       order by AirportReview.createdAt desc
     `;
   };
+
+  retrieveDeletedUserByPhoneNumber = (phoneNumber: string) => {
+    return `
+      SELECT User.id
+      FROM User
+      WHERE User.phoneNumber = ${phoneNumber}
+        and User.accountStatus = 'DELETED'
+        and TIMESTAMPDIFF(day, User.createdAt, NOW()) < 7;
+    `;
+  };
 }

@@ -41,6 +41,7 @@ export class AuthService {
       const user = await this.userRepository.findOne({
         where: {
           id: id,
+          accountStatus: Status.ACTIVE,
           status: Status.ACTIVE,
         },
       });

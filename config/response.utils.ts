@@ -354,6 +354,11 @@ export const response = {
     code: 2069,
     message: '존재하지 않는 리뷰 신고 사유입니다.',
   },
+  USER_DELETE_DATE_ERROR: {
+    isSuccess: false,
+    code: 2070,
+    message: '탈퇴 후 7일 동안은 다시 가입할 수 없습니다.',
+  },
   ERROR: {
     isSuccess: false,
     code: 4000,

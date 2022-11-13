@@ -84,6 +84,10 @@ export class UserController {
     description: '존재하는 아이디입니다.',
   })
   @ApiResponse({
+    status: 2070,
+    description: '탈퇴 후 7일 동안은 다시 가입할 수 없습니다.',
+  })
+  @ApiResponse({
     status: 4000,
     description: '서버 에러',
   })
