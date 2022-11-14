@@ -110,6 +110,7 @@ export class ScheduleService {
             status: Status.ACTIVE,
           }))
         ) {
+          await queryRunner.rollbackTransaction();
           return response.NON_EXIST_AIRPORT_SERVICE;
         }
         let departureScheduleAirportServiceRegister =
@@ -132,6 +133,7 @@ export class ScheduleService {
             status: Status.ACTIVE,
           }))
         ) {
+          await queryRunner.rollbackTransaction();
           return response.NON_EXIST_AIRPORT_SERVICE;
         }
         let arrivalScheduleAirportServiceRegister =
@@ -153,6 +155,7 @@ export class ScheduleService {
             status: Status.ACTIVE,
           }))
         ) {
+          await queryRunner.rollbackTransaction();
           return response.NON_EXIST_AIRLINE_SERVICE;
         }
         let scheduleAirlineServiceRegister = new ScheduleAirlineService();
@@ -529,6 +532,7 @@ export class ScheduleService {
             status: Status.ACTIVE,
           }))
         ) {
+          await queryRunner.rollbackTransaction();
           return response.NON_EXIST_AIRPORT_SERVICE;
         }
         let departureScheduleAirportServiceRegister =
@@ -552,6 +556,7 @@ export class ScheduleService {
             status: Status.ACTIVE,
           }))
         ) {
+          await queryRunner.rollbackTransaction();
           return response.NON_EXIST_AIRPORT_SERVICE;
         }
         let arrivalScheduleAirportServiceRegister =
@@ -574,6 +579,7 @@ export class ScheduleService {
             status: Status.ACTIVE,
           }))
         ) {
+          await queryRunner.rollbackTransaction();
           return response.NON_EXIST_AIRLINE_SERVICE;
         }
         let scheduleAirlineServiceRegister = new ScheduleAirlineService();
