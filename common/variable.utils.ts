@@ -14,6 +14,11 @@ export enum ReviewStatus {
   BEFORE = '작성전',
 }
 
+export enum ScheduleReviewStatus {
+  COMPLETED = '작성완료',
+  CAN_WRITE = '작성가능',
+}
+
 export const GetSchedulesType = ['future', 'past'];
 
 export const GetSchedulesSort = ['latest', 'oldest', 'boardingTime'];

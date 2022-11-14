@@ -9,6 +9,7 @@ import { Airline } from 'src/entity/airline.entity';
 import {
   AirportServiceType,
   ReviewStatus,
+  ScheduleReviewStatus,
   Status,
 } from 'common/variable.utils';
 import { AirportService } from 'src/entity/airportSerivce.entity';
@@ -44,6 +45,10 @@ export class ScheduleService {
     private airlineReviewRepository: Repository<AirlineReview>,
     @InjectRepository(Schedule)
     private scheduleRepository: Repository<Schedule>,
+    @InjectRepository(ScheduleAirlineService)
+    private scheduleAirlineServiceRepository: Repository<ScheduleAirlineService>,
+    @InjectRepository(ScheduleAirportService)
+    private scheduleAirportServiceRepository: Repository<ScheduleAirportService>,
 
     private scheduleQuery: ScheduleQuery,
     private connection: DataSource,
@@ -275,10 +280,69 @@ export class ScheduleService {
           ),
         );
 
-        // // 오늘 추가
-        // for (let schedule of schedules) {
-        //   schedule[''];
-        // }
+        // 리뷰 작성 가능 여부
+        for (let schedule of schedules) {
+          // 이용 서비스 개수
+          let serviceCount = 0;
+
+          // 항공사 서비스 이용 여부 확인
+          if (
+            await this.scheduleAirlineServiceRepository.findOneBy({
+              scheduleId: schedule.scheduleId,
+              status: Status.ACTIVE,
+            })
+          ) {
+            serviceCount = serviceCount + 1;
+          }
+
+          // 공항(출발) 서비스 이용 여부 확인
+          const a = await this.scheduleAirportServiceRepository.findOneBy({
+            scheduleId: schedule.scheduleId,
+            type: AirportServiceType.DEPARTURE,
+            status: Status.ACTIVE,
+          });
+          if (a) {
+            serviceCount = serviceCount + 1;
+          }
+
+          // 공항(도착) 서비스 이용 여부 확인
+          if (
+            await this.scheduleAirportServiceRepository.findOneBy({
+              scheduleId: schedule.scheduleId,
+              type: AirportServiceType.ARRIVAL,
+              status: Status.ACTIVE,
+            })
+          ) {
+            serviceCount = serviceCount + 1;
+          }
+
+          // 리뷰 작성 개수
+          let reviewCount = 0;
+          const airlineReview = await this.airlineReviewRepository.find({
+            where: {
+              scheduleId: schedule.scheduleId,
+              userId: userId,
+              status: Status.ACTIVE,
+            },
+          });
+          reviewCount = reviewCount + airlineReview.length;
+
+          const airportReview = await this.airportReviewRepository.find({
+            where: {
+              scheduleId: schedule.scheduleId,
+              userId: userId,
+              status: Status.ACTIVE,
+            },
+          });
+          reviewCount = reviewCount + airportReview.length;
+
+          // 리뷰 전부 작성 시 작성 불가능
+          if (reviewCount >= serviceCount) {
+            schedule.reviewStatus = ScheduleReviewStatus.COMPLETED;
+          } else {
+            schedule.reviewStatus = ScheduleReviewStatus.CAN_WRITE;
+          }
+        }
 
         data = {
           scheduleCount: total.length,

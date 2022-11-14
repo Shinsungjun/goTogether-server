@@ -73,6 +73,15 @@ class ScheduleInfo {
   })
   @IsString()
   airlineName: string;
+
+  @ApiProperty({
+    example: '작성완료',
+    description:
+      '리뷰 작성 가능 여부 (작성 가능하면 "작성가능", 불가능하면 "작성완료")',
+    required: false,
+  })
+  @IsString()
+  reviewStatus: string;
 }
 
 class GetSchedulesResultData {
@@ -97,6 +106,7 @@ class GetSchedulesResultData {
         arrivalAirportName: '여수공항',
         airlineId: 1,
         airlineName: '대한항공',
+        reviewStatus: '작성완료',
       },
       {
         scheduleId: 2,
@@ -109,9 +119,10 @@ class GetSchedulesResultData {
         arrivalAirportName: '여수공항',
         airlineId: 1,
         airlineName: '대한항공',
+        reviewStatus: '작성가능',
       },
     ],
-    description: '일정 리스트',
+    description: '일정 객체 리스트',
     isArray: true,
     type: ScheduleInfo,
   })
