@@ -286,6 +286,10 @@ export class AirportController {
     description: '공항 아이디를 입력해주세요.',
   })
   @ApiResponse({
+    status: 2046,
+    description: '일정 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
     status: 2047,
     description: '일정 아이디는 0보다 큰 값을 입력해주세요.',
   })
