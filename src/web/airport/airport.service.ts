@@ -290,6 +290,7 @@ export class AirportService {
             status: Status.ACTIVE,
           }))
         ) {
+          await queryRunner.rollbackTransaction();
           return response.NON_EXIST_AIRPORT_SERVICE;
         }
         let reviewAirportServiceRegister = new ReviewAirportService();

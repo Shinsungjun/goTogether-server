@@ -275,6 +275,11 @@ export class ScheduleService {
           ),
         );
 
+        // // 오늘 추가
+        // for (let schedule of schedules) {
+        //   schedule[''];
+        // }
+
         data = {
           scheduleCount: total.length,
           schedules: schedules,
@@ -592,6 +597,7 @@ export class ScheduleService {
         ),
       );
       arrivalAirport['airportServices'] = arrivalAirportServices;
+
       // 리뷰 작성 상태 조회
       if (
         await this.airportReviewRepository.findOneBy({
