@@ -727,7 +727,6 @@ export class ScheduleService {
 
       return result;
     } catch (error) {
-      console.log(error.message);
       return response.ERROR;
     } finally {
       await queryRunner.release();
