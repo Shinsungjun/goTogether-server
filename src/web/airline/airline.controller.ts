@@ -346,6 +346,10 @@ export class AirlineController {
     description: '존재하지 않는 항공사입니다.',
   })
   @ApiResponse({
+    status: 2046,
+    description: '일정 아이디를 입력해주세요.',
+  })
+  @ApiResponse({
     status: 2047,
     description: '일정 아이디는 0보다 큰 값을 입력해주세요.',
   })
