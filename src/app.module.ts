@@ -9,16 +9,21 @@ import { InfoModule } from './web/info/info.module';
 import { ScheduleModule } from './web/schedule/schedule.module';
 import { SearchModule } from './web/search/search.module';
 import { UserModule } from './web/user/user.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: './config/env/.dev.env',
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'jj-database.cyix6flvbh8e.ap-northeast-2.rds.amazonaws.com',
+      host: process.env.DATABASE_HOST,
       port: 3306,
-      username: 'admin',
-      password: 'jjjj1234',
-      database: 'jj-dev-db',
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: ['dist/src/**/*.entity{.ts,.js}'],
       synchronize: false,
       bigNumberStrings: false,
