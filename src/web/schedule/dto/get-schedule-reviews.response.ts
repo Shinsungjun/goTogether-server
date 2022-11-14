@@ -151,6 +151,7 @@ class GetScheduleReviewsResultData {
     },
     description: '출발 공항 정보 및 리뷰 여부 객체',
     type: AirportReviewInfo,
+    required: false,
   })
   @IsObject()
   departureAirport: AirportReviewInfo;
@@ -170,6 +171,7 @@ class GetScheduleReviewsResultData {
     },
     description: '도착 공항 정보 및 리뷰 여부 객체',
     type: AirportReviewInfo,
+    required: false,
   })
   @IsObject()
   arrivalAirport: AirportReviewInfo;
@@ -194,6 +196,7 @@ class GetScheduleReviewsResultData {
     },
     description: '항공사 정보 및 리뷰 여부 객체',
     type: AirlineReviewInfo,
+    required: false,
   })
   @IsObject()
   airline: AirlineReviewInfo;

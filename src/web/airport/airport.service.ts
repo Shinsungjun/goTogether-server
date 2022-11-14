@@ -251,30 +251,27 @@ export class AirportService {
         return response.NON_EXIST_AIRPORT;
       }
 
+      // 존재하는 일정인지 확인
+      let schedule = await queryRunner.manager.findOneBy(Schedule, {
+        id: postAirportReviewRequest.scheduleId,
+        status: Status.ACTIVE,
+      });
+      if (!schedule) {
+        return response.NON_EXIST_SCHEDULE;
+      }
+
+      // 해당 user의 일정인지 확인
+      if (schedule.userId != postAirportReviewRequest.userId) {
+        return response.SCHEDULE_USER_PERMISSION_DENIED;
+      }
+
       // 리뷰 생성
       let airportReviewRegister = new AirportReview();
       airportReviewRegister.userId = postAirportReviewRequest.userId;
       airportReviewRegister.airportId = postAirportReviewRequest.airportId;
       airportReviewRegister.content = postAirportReviewRequest.content;
       airportReviewRegister.score = postAirportReviewRequest.score;
-      // 일정에서 리뷰 바로 작성 시
-      if (postAirportReviewRequest.scheduleId) {
-        // 존재하는 일정인지 확인
-        let schedule = await queryRunner.manager.findOneBy(Schedule, {
-          id: postAirportReviewRequest.scheduleId,
-          status: Status.ACTIVE,
-        });
-        if (!schedule) {
-          return response.NON_EXIST_SCHEDULE;
-        }
-
-        // 해당 user의 일정인지 확인
-        if (schedule.userId != postAirportReviewRequest.userId) {
-          return response.SCHEDULE_USER_PERMISSION_DENIED;
-        }
-
-        airportReviewRegister.scheduleId = postAirportReviewRequest.scheduleId;
-      }
+      airportReviewRegister.scheduleId = postAirportReviewRequest.scheduleId;
 
       const createdAirportReview = await queryRunner.manager.save(
         airportReviewRegister,
@@ -290,6 +287,7 @@ export class AirportService {
             status: Status.ACTIVE,
           }))
         ) {
+          await queryRunner.rollbackTransaction();
           return response.NON_EXIST_AIRPORT_SERVICE;
         }
         let reviewAirportServiceRegister = new ReviewAirportService();
