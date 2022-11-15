@@ -357,6 +357,8 @@ export class AuthService {
   async retrieveDuplicatePhoneNumber(
     getDuplicatePhoneNumberRequest: GetDuplicatePhoneNumberRequest,
   ) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
     try {
       // 전화번호 조회
       const phoneNumber = await this.userRepository.findOne({
@@ -370,11 +372,23 @@ export class AuthService {
         return response.EXIST_PHONENUMBER;
       }
 
+      // 탈퇴 후 7일이 지나지 않은 계정 존재 확인
+      const isExistUserDeleted = await queryRunner.query(
+        this.authQuery.retrieveDeletedUserByPhoneNumber(
+          getDuplicatePhoneNumberRequest.phoneNumber,
+        ),
+      );
+      if (isExistUserDeleted.length > 0) {
+        return response.USER_DELETE_DATE_ERROR;
+      }
+
       const result = makeResponse(response.SUCCESS, undefined);
 
       return result;
     } catch (error) {
       return response.ERROR;
+    } finally {
+      await queryRunner.release();
     }
   }
 

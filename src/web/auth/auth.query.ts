@@ -10,4 +10,14 @@ export class AuthQuery {
       WHERE User.phoneNumber = '${phoneNumber}' and User.status = 'ACTIVE';
     `;
   };
+
+  retrieveDeletedUserByPhoneNumber = (phoneNumber: string): string => {
+    return `
+      SELECT User.id
+      FROM User
+      WHERE User.phoneNumber = ${phoneNumber}
+        and User.accountStatus = 'DELETED'
+        and TIMESTAMPDIFF(day, User.createdAt, NOW()) < 7;
+    `;
+  };
 }
